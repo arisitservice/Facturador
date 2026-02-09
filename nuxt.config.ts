@@ -7,6 +7,7 @@ export default defineNuxtConfig({
       standalone: false, // <---
     },
   },
+  css: ['~/assets/css/main.css'],
   modules: [
     '@nuxt/eslint',
     '@nuxt/test-utils',
