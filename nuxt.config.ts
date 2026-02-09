@@ -2,7 +2,11 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-
+  eslint: {
+    config: {
+      standalone: false, // <---
+    },
+  },
   modules: [
     '@nuxt/eslint',
     '@nuxt/test-utils',
