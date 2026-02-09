@@ -1,7 +1,7 @@
 import antfu from '@antfu/eslint-config';
 
 // @ts-check
-import withNuxt from './.nuxt/eslint.config.mjs'
+import withNuxt from './.nuxt/eslint.config.mjs';
 
 export default withNuxt(
   antfu(
@@ -14,7 +14,7 @@ export default withNuxt(
         semi: true,
         quotes: 'single',
       },
-      ignores: ['./src/github/schema.docs.graphql', '**/migrations/*'],
+      ignores: ['./src/github/schema.docs.graphql', '**/migrations/*', 'docker-compose*'],
     },
     {
       rules: {
@@ -35,7 +35,9 @@ export default withNuxt(
         'perfectionist/sort-imports': [
           'error',
           {
-            tsconfigRootDir: '.',
+            tsconfig: {
+              rootDir: '.',
+            },
           },
         ],
         'unicorn/filename-case': [
@@ -49,4 +51,4 @@ export default withNuxt(
     },
   ),
   // Your custom configs here
-)
+);

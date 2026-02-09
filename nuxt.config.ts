@@ -13,6 +13,6 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    'nuxt-csurf'
-  ]
-})
+    'nuxt-csurf',
+  ],
+});

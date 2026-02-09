@@ -1,13 +1,14 @@
-import { fileURLToPath } from 'node:url'
-import { defineConfig, devices } from '@playwright/test'
-import type { ConfigOptions } from '@nuxt/test-utils/playwright'
+import type { ConfigOptions } from '@nuxt/test-utils/playwright';
+
+import { defineConfig, devices } from '@playwright/test';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig<ConfigOptions>({
   testDir: './tests',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // forbidOnly: !!process.env.CI,
+  // retries: process.env.CI ? 2 : 0,
+  // workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
     trace: 'on-first-retry',
@@ -21,4 +22,4 @@ export default defineConfig<ConfigOptions>({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-})
+});
