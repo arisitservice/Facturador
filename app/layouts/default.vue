@@ -3,9 +3,15 @@
 </script>
 
 <template>
-  <UContainer>
-    <slot />
-  </UContainer>
+  <div>
+    <AppHeader />
+
+    <UMain>
+      <slot />
+    </UMain>
+
+    <AppFooter />
+  </div>
 </template>
 
 <style scoped>
