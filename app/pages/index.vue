@@ -31,13 +31,6 @@ useSeoMeta({
         <HeroBackground />
       </template>
 
-      <template #title>
-        <MDC
-          :value="page.title"
-          unwrap="p"
-        />
-      </template>
-
       <PromotionalVideo />
     </UPageHero>
 
