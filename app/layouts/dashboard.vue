@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
 
+import AddNewRecordSlideover from '~/components/catalogs/add-new-record-slideover.vue';
+
 const route = useRoute();
 const toast = useToast();
 
@@ -216,5 +218,6 @@ onMounted(async () => {
     <slot />
 
     <NotificationSlideover />
+    <AddNewRecordSlideover />
   </UDashboardGroup>
 </template>

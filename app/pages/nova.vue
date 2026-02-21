@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui';
-
 import { sub } from 'date-fns';
 
 import type { Period, Range } from '~/types/facturador';
@@ -9,29 +7,18 @@ definePageMeta({
   layout: 'dashboard',
 });
 
-const { isNotificationsSlideoverOpen } = useDashboard();
+const { isNotificationsSlideoverOpen, isAddNewRecordSlideoverOpen } = useDashboard();
+const route = useRoute();
 
-const items = [[{
-  label: 'New mail',
-  icon: 'i-lucide-send',
-  to: '/inbox',
-}, {
-  label: 'New customer',
-  icon: 'i-lucide-user-plus',
-  to: '/customers',
-}]] satisfies DropdownMenuItem[][];
+// show dashboard header and toolbar only on the dashboard index page
+const showDashboardHeader = computed(() => route.path === '/nova/dashboard');
+const showCatalogsHeader = computed(() => route.path.startsWith('/nova/catalogs'));
 
 const range = shallowRef<Range>({
   start: sub(new Date(), { days: 14 }),
   end: new Date(),
 });
 const period = ref<Period>('daily');
-
-function openSlideover() {
-  console.log(isNotificationsSlideoverOpen.value);
-  isNotificationsSlideoverOpen.value = true;
-  console.log(isNotificationsSlideoverOpen.value);
-}
 </script>
 
 <template>
@@ -48,30 +35,33 @@ function openSlideover() {
               color="neutral"
               variant="ghost"
               square
-              @click="openSlideover"
+              @click="isNotificationsSlideoverOpen = true"
             >
               <UChip color="error" inset>
                 <UIcon name="i-lucide-bell" class="size-5 shrink-0" />
               </UChip>
             </UButton>
           </UTooltip>
-
-          <UDropdownMenu :items="items">
-            <UButton
-              icon="i-lucide-plus"
-              size="md"
-              class="rounded-full"
-            />
-          </UDropdownMenu>
         </template>
       </UDashboardNavbar>
 
       <UDashboardToolbar>
         <template #left>
-          <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-          <DateRangePicker v-model="range" class="-ms-1" />
-
-          <PeriodSelect v-model="period" :range="range" />
+          <div v-if="showDashboardHeader">
+            <!-- NOTE: The `-ms-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
+            <DateRangePicker v-model="range" class="-ms-1" />
+            <PeriodSelect v-model="period" :range="range" />
+          </div>
+        </template>
+        <template #right>
+          <div v-if="showCatalogsHeader">
+            <UButton
+              label="Agregar"
+              color="primary"
+              icon="i-lucide-plus"
+              @click="isAddNewRecordSlideoverOpen = true"
+            />
+          </div>
         </template>
       </UDashboardToolbar>
     </template>
