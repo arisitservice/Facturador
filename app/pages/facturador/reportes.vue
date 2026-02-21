@@ -1,11 +1,15 @@
 <script setup lang="ts">
 definePageMeta({
-  name: 'facturador-dashboard',
+  name: 'facturador-reportes',
 });
 </script>
 
 <template>
   <div>
-    Children of dashboard
+    Reportes page
   </div>
 </template>
+
+<style scoped>
+
+</style>
