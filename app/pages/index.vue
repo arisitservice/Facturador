@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { PageData } from '@@/types/pages/page';
 import type { ButtonProps } from '@nuxt/ui';
+
+import type { PageData } from '@/types/landing';
 
 const { data } = await useAsyncData('page', () => import(`@/assets/data/index.json`));
 const page = ref<PageData | undefined>(undefined);

@@ -33,6 +33,9 @@ type Schema = z.output<typeof schema>;
 const error = false;
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   console.log(payload.data);
+  useRouter().push({
+    name: 'facturador-dashboard',
+  });
 }
 </script>
 
