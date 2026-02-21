@@ -10,54 +10,81 @@ const links = [[
   {
     label: 'Home',
     icon: 'i-lucide-house',
-    to: { name: 'facturador-dashboard' },
+    to: { name: 'nova-dashboard' },
     onSelect: () => {
       open.value = false;
     },
   },
   {
-    label: 'Facturación',
+    label: 'Billing',
     icon: 'i-lucide-credit-card',
-    to: { name: 'facturador-facturacion' },
     badge: '4',
     onSelect: () => {
       open.value = false;
     },
   },
   {
-    label: 'Documentos',
+    label: 'Documents',
     icon: 'i-lucide-file-text',
-    to: { name: 'facturador-documentos' },
     onSelect: () => {
       open.value = false;
     },
   },
   {
-    label: 'Reportes',
+    label: 'Reports',
     icon: 'i-lucide-chart-bar',
-    to: { name: 'facturador-reportes' },
     onSelect: () => {
       open.value = false;
     },
   },
   {
-    label: 'Catálogos',
+    label: 'Catalogs',
     icon: 'i-lucide-box',
-    to: { name: 'facturador-catalogos' },
-    onSelect: () => {
-      open.value = false;
-    },
+    defaultOpen: true,
+    type: 'trigger',
+    children: [
+      {
+        label: 'Clients',
+        to: { name: 'nova-catalogs-clients' },
+        exact: true,
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+      {
+        label: 'Suppliers',
+        to: { name: 'nova-catalogs-suppliers' },
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+      {
+        label: 'Users',
+        to: { name: 'nova-catalogs-users' },
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+      {
+        label: 'Folders',
+        to: { name: 'nova-catalogs-folders' },
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+    ],
+
   },
   {
     label: 'Settings',
-    to: { name: 'facturador-settings' },
     icon: 'i-lucide-settings',
+    to: { name: 'nova-settings' },
     defaultOpen: true,
     type: 'trigger',
     children: [
       {
         label: 'General',
-        to: '/settings',
+        to: '#',
         exact: true,
         onSelect: () => {
           open.value = false;
@@ -65,21 +92,21 @@ const links = [[
       },
       {
         label: 'Members',
-        to: '/settings/members',
+        to: '#',
         onSelect: () => {
           open.value = false;
         },
       },
       {
         label: 'Notifications',
-        to: '/settings/notifications',
+        to: '#',
         onSelect: () => {
           open.value = false;
         },
       },
       {
         label: 'Security',
-        to: '/settings/security',
+        to: '#',
         onSelect: () => {
           open.value = false;
         },

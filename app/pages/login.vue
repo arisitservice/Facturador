@@ -34,7 +34,7 @@ const error = false;
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   console.log(payload.data);
   useRouter().push({
-    name: 'facturador-dashboard',
+    name: 'nova-dashboard',
   });
 }
 </script>
