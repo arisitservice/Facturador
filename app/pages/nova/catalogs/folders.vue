@@ -1,12 +1,14 @@
 <script setup lang="ts">
 definePageMeta({
-  name: 'facturador-documentos',
+  name: 'nova-catalogs-folders',
 });
 </script>
 
 <template>
   <div>
-    Documentos page
+    <h1 class="text-2xl font-bold">
+      Folders
+    </h1>
   </div>
 </template>
 

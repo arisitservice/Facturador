@@ -1,12 +1,14 @@
 <script setup lang="ts">
 definePageMeta({
-  name: 'facturador-reportes',
+  name: 'nova-catalogs-users',
 });
 </script>
 
 <template>
   <div>
-    Reportes page
+    <h1 class="text-2xl font-bold">
+      Users
+    </h1>
   </div>
 </template>
 

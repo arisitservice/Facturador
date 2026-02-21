@@ -1,15 +1,11 @@
 <script setup lang="ts">
 definePageMeta({
-  name: 'facturador-facturacion',
+  name: 'nova-dashboard',
 });
 </script>
 
 <template>
   <div>
-    Facturacion page
+    Children of dashboard
   </div>
 </template>
-
-<style scoped>
-
-</style>
