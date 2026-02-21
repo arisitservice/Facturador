@@ -4,6 +4,7 @@ function _useDashboard() {
   const route = useRoute();
   const router = useRouter();
   const isNotificationsSlideoverOpen = ref(false);
+  const isAddNewRecordSlideoverOpen = ref(false);
 
   defineShortcuts({
     'g-h': () => router.push('/'),
@@ -15,10 +16,12 @@ function _useDashboard() {
 
   watch(() => route.fullPath, () => {
     isNotificationsSlideoverOpen.value = false;
+    isAddNewRecordSlideoverOpen.value = false;
   });
 
   return {
     isNotificationsSlideoverOpen,
+    isAddNewRecordSlideoverOpen,
   };
 }
 
