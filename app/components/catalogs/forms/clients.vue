@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui';
 
-import type { NewClient } from '~/lib/schemas/client';
+import type { NewClient } from '~/lib/schemas/catalogs';
 
-import { newClientSchema } from '~/lib/schemas/client';
+import { newClientSchema } from '~/lib/schemas/catalogs';
 
 const { isAddNewRecordSlideoverOpen } = useDashboard();
 
