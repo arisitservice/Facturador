@@ -2,18 +2,18 @@
 const { isAddNewRecordSlideoverOpen } = useDashboard();
 const route = useRoute();
 
-type FormType = 'clients' | 'suppliers' | 'users' | 'folders' | null;
+type FormType = 'client' | 'supplier' | 'user' | 'folder' | null;
 
 const showForm = computed<FormType>(() => {
   const path = route.path;
   if (path === '/nova/catalogs/clients')
-    return 'clients';
+    return 'client';
   if (path === '/nova/catalogs/suppliers')
-    return 'suppliers';
+    return 'supplier';
   if (path === '/nova/catalogs/users')
-    return 'users';
+    return 'user';
   if (path === '/nova/catalogs/folders')
-    return 'folders';
+    return 'folder';
   return null;
 });
 </script>
@@ -21,14 +21,14 @@ const showForm = computed<FormType>(() => {
 <template>
   <USlideover
     v-model:open="isAddNewRecordSlideoverOpen"
-    title="Add New Record"
+    :title="`Add new ${showForm}`"
   >
     <template #body>
       <div>
-        <CatalogsFormsClients v-if="showForm === 'clients'" />
-        <CatalogsFormsSuppliers v-else-if="showForm === 'suppliers'" />
-        <CatalogsFormsUsers v-else-if="showForm === 'users'" />
-        <CatalogsFormsFolders v-else-if="showForm === 'folders'" />
+        <CatalogsFormsClients v-if="showForm === 'client'" />
+        <CatalogsFormsSuppliers v-else-if="showForm === 'supplier'" />
+        <CatalogsFormsUsers v-else-if="showForm === 'user'" />
+        <CatalogsFormsFolders v-else-if="showForm === 'folder'" />
       </div>
     </template>
   </USlideover>
