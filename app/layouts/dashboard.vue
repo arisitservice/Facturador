@@ -20,10 +20,32 @@ const links = [[
   {
     label: 'Billing',
     icon: 'i-lucide-credit-card',
-    badge: '4',
-    onSelect: () => {
-      open.value = false;
-    },
+    defaultOpen: true,
+    type: 'trigger',
+    children: [
+      {
+        label: 'New invoice',
+        to: { name: 'nova-billing-invoices-new-invoice' },
+        exact: true,
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+      {
+        label: 'New Credit note',
+        to: { name: 'nova-billing-credit-notes-new-credit-note' },
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+      {
+        label: 'New Payment Complement',
+        to: { name: 'nova-billing-payment-complements-new-payment-complement' },
+        onSelect: () => {
+          open.value = false;
+        },
+      },
+    ],
   },
   {
     label: 'Documents',
@@ -75,7 +97,6 @@ const links = [[
         },
       },
     ],
-
   },
   {
     label: 'Settings',
