@@ -7,6 +7,8 @@ defineProps<{
 
 const colorMode = useColorMode();
 const appConfig = useAppConfig();
+const { signOut } = useAuthStore();
+const router = useRouter();
 
 const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
@@ -18,6 +20,12 @@ const user = ref({
     alt: 'Benjamin Canac',
   },
 });
+
+// Logout handler
+async function handleLogout() {
+  await signOut();
+  router.push('/login');
+}
 
 const items = computed<DropdownMenuItem[][]>(() => ([[{
   type: 'label',
@@ -148,6 +156,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
 }, {
   label: 'Log out',
   icon: 'i-lucide-log-out',
+  onSelect: handleLogout,
 }]]));
 </script>
 
