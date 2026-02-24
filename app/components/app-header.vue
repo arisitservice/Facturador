@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { isAuthenticated } = useAuthStore();
 const route = useRoute();
 
 const items = computed(() => [{
@@ -37,19 +38,20 @@ const items = computed(() => [{
         icon="i-lucide-log-in"
         color="neutral"
         variant="ghost"
-        to="/login"
+        :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
         class="lg:hidden"
       />
 
       <UButton
-        label="Sign in"
+
+        :label="isAuthenticated ? 'Dashboard' : 'Sign in'"
         color="neutral"
         variant="outline"
-        to="/login"
+        :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
         class="hidden lg:inline-flex"
       />
-
       <UButton
+        v-if="!isAuthenticated"
         label="Sign up"
         color="neutral"
         trailing-icon="i-lucide-arrow-right"
