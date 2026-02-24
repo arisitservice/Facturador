@@ -8,8 +8,8 @@ export const useAuthStore = defineStore('useAuthStore', () => {
   const session = ref<User | null>(null);
   const token = ref<string | null>(null);
   const tokenType = ref<string | null>(null);
-
   const isLoading = ref(false);
+
   const isAuthenticated = computed(() => !!session.value && !!token.value);
   const user = computed(() => session.value || null);
 
@@ -20,11 +20,18 @@ export const useAuthStore = defineStore('useAuthStore', () => {
       const storedTokenType = localStorage.getItem(TOKEN_TYPE_KEY);
       const storedUser = localStorage.getItem(USER_KEY);
 
+      console.log('token: ', storedToken);
+      console.log('tokenType: ', storedTokenType);
+      console.log('storedUser: ', storedUser);
+      console.log('session:', session.value);
+
+      console.log(isAuthenticated.value);
       if (storedToken && storedTokenType && storedUser) {
         try {
           token.value = storedToken;
           tokenType.value = storedTokenType;
           session.value = JSON.parse(storedUser);
+          console.log('session after json.parse:', session.value);
         }
         catch (error) {
           console.error('Failed to restore session:', error);
@@ -114,6 +121,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
   return {
     isLoading,
     isAuthenticated,
+    session,
     user,
     token,
     tokenType,

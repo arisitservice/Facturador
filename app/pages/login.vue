@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 definePageMeta({
   layout: 'login',
+  name: 'login',
 });
 
 const authStore = useAuthStore();

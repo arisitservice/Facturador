@@ -5,7 +5,7 @@ import type { Period, Range } from '~/types/facturador';
 
 definePageMeta({
   layout: 'dashboard',
-  middleware: 'auth',
+  middleware: ['dashboard'],
 });
 
 const { isNotificationsSlideoverOpen, isAddNewRecordSlideoverOpen } = useDashboard();
