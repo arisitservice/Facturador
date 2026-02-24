@@ -7,6 +7,16 @@ definePageMeta({
   layout: 'login',
 });
 
+const authStore = useAuthStore();
+const { signIn, isAuthenticated } = authStore;
+const isLoading = ref(false);
+// Redirect if already authenticated
+onMounted(() => {
+  if (isAuthenticated) {
+    navigateTo({ name: 'nova-dashboard' });
+  }
+});
+
 const fields = ref<AuthFormField[]>([
   {
     name: 'email',
@@ -30,12 +40,30 @@ const schema = z.object({
 });
 
 type Schema = z.output<typeof schema>;
-const error = false;
+const error = ref(false);
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  console.log(payload.data);
-  useRouter().push({
-    name: 'nova-dashboard',
-  });
+  try {
+    isLoading.value = true;
+    const response = await signIn(payload.data);
+
+    if (!response.success) {
+      error.value = true;
+      // useAuthStore().setToken(response.token);
+      // useAuthStore().setUser(response.user);
+      return;
+    }
+
+    useRouter().push({
+      name: 'nova-dashboard',
+    });
+  }
+  catch (err) {
+    error.value = true;
+    console.error('Login error:', process.env.NODE_ENV === 'development' ? err : 'An error occurred during login.');
+  }
+  finally {
+    isLoading.value = false;
+  }
 }
 </script>
 
@@ -43,6 +71,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
   <UAuthForm
     :schema="schema"
     :fields="fields"
+    :loading="isLoading"
     title="Welcome back"
     icon="i-lucide-lock"
     @submit="onSubmit"
@@ -79,7 +108,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         v-if="error"
         color="error"
         icon="i-lucide-info"
-        title="Error signing in"
+        title="Error signing in, try again"
       />
     </template>
   </UAuthForm>
