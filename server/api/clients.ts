@@ -1,6 +1,6 @@
 import type { User } from '~/types/facturador';
 
-const clients: User[] = [{
+const clients: Pick<User, 'id' | 'name' | 'email' | 'avatar' | 'status' | 'location'>[] = [{
   id: 1,
   name: 'Alex Smith',
   email: 'alex.smith@example.com',
