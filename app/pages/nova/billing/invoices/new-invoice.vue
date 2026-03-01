@@ -167,7 +167,7 @@ const state = ref<NewInvoiceData>({
           name="vatDetails"
           class="flex gap-4"
         >
-          <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex flex-col 2xl:flex-row gap-4">
             <UFormField
               label="VAT Rate"
               name="vatChargedAtRate"
