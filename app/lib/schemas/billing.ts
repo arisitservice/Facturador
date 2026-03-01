@@ -53,6 +53,43 @@ export const newInvoiceDataSchema = z.object({
 
 export type NewInvoiceData = z.infer<typeof newInvoiceDataSchema>;
 
+export const creditNoteTaxInfoSchema = invoiceTaxInfoSchema.omit({ relatedInvoiceId: true });
+
+export type CreditNoteTaxInfo = z.infer<typeof creditNoteTaxInfoSchema>;
+
+export const creditNoteProductServiceSchema = productServiceSchema.omit({ productServiceId: true, measureUnitId: true }).extend({
+  isTaxable: z.boolean(),
+  withholdingType: z.enum(['vat', 'incomeTax']),
+});
+
+export type CreditNoteProductService = z.infer<typeof creditNoteProductServiceSchema>;
+
+export const newCreditNoteDataSchema = z.object({
+  client: clientDataSchema,
+  taxInfo: creditNoteTaxInfoSchema,
+  productServices: z.array(creditNoteProductServiceSchema),
+});
+
+export type NewCreditNoteData = z.infer<typeof newCreditNoteDataSchema>;
+
+export const paymentReceptionSchema = z.object({
+  paymentMethod: z.string().min(1, 'payment method is required'),
+  paymentCurrency: z.string().min(1, 'payment currency is required'),
+  paymentDate: z.string().min(1, 'payment date is required'),
+  amount: z.number().min(0.01, 'amount must be greater than 0'),
+  transactionNumber: z.string().min(1, 'transaction number is required'),
+  fiscalFolios: z.array(z.string().min(1)).min(1, 'at least one fiscal folio is required'),
+});
+
+export type PaymentReception = z.infer<typeof paymentReceptionSchema>;
+
+export const newPaymentComplementDataSchema = z.object({
+  client: clientDataSchema,
+  paymentReception: paymentReceptionSchema,
+});
+
+export type NewPaymentComplementData = z.infer<typeof newPaymentComplementDataSchema>;
+
 // APIs Responses
 
 export type InvoiceUsage = {
