@@ -220,6 +220,49 @@ const state = ref<NewInvoiceData>({
       </UCard>
     </div>
     <UTable :data="dummyTableData" class="flex-1" />
+    <UCard>
+      <template #header>
+        <h2 class="text-xl lg:text-2xl font-bold">
+          VAT Details
+        </h2>
+      </template>
+      <UForm
+        nested
+        name="vatDetails"
+        class="flex gap-4"
+      >
+        <UFormField
+          label="VAT Charged at Rate"
+          name="vatChargedAtRate"
+        >
+          <USwitch v-model="state.vatDetails.vatChargedAtRate" @change="state.vatDetails.vatExempt = false" />
+        </UFormField>
+        <UFormField
+          label="VAT Exempt"
+          name="vatExempt"
+        >
+          <USwitch v-model="state.vatDetails.vatExempt" @change="state.vatDetails.vatChargedAtRate = false" />
+        </UFormField>
+        <UFormField
+          label="VAT Withholding at Rate"
+          name="vatWithholdingAtRate"
+        >
+          <USwitch v-model="state.vatDetails.vatWithholdingAtRate" />
+        </UFormField>
+        <UFormField
+          label="Income Tax Withholding"
+          name="incomeTaxWithholding"
+        >
+          <USwitch v-model="state.vatDetails.incomeTaxWithholding" />
+        </UFormField>
+        <UFormField
+          label="Amount"
+          name="amount"
+        >
+          <UInput type="number" class="w-full" />
+        </UFormField>
+      </UForm>
+    </ucard>
   </UForm>
 </template>
 
