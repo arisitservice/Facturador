@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreditNoteProductServiceData, NewCreditNoteData } from '~/lib/schemas/billing';
+import type { CreditNoteProductService, NewCreditNoteData } from '~/lib/schemas/billing';
 
 import { dummyTableData } from '~/assets/data/tables/dummy';
 import { paymentForms, paymentMethods } from '~/lib/conts';
@@ -33,7 +33,7 @@ const state = ref<NewCreditNoteData>({
   productServices: [],
 });
 
-const productServiceData = ref<CreditNoteProductServiceData>({
+const productServiceData = ref<CreditNoteProductService>({
   detailedDescription: '',
   quantity: 0,
   unitPrice: 0,
@@ -42,8 +42,8 @@ const productServiceData = ref<CreditNoteProductServiceData>({
 });
 
 function handleTaxableChange() {
-  if (!state.value.isTaxable) {
-    state.value.withholdingType = undefined;
+  if (!productServiceData.value.isTaxable) {
+    productServiceData.value.withholdingType = undefined;
   }
 }
 
@@ -150,14 +150,14 @@ console.log(productServiceData);
             name="paymentMethod"
             required
           >
-            <USelect :items="paymentMethods" />
+            <USelect v-model="state.taxInfo.paymentMethod" :items="paymentMethods" />
           </UFormField>
           <UFormField
             label="Payment Form"
             name="paymentForm"
             required
           >
-            <USelect :items="paymentForms" />
+            <USelect v-model="state.taxInfo.paymentForm" :items="paymentForms" />
           </UFormField>
           <UFormField
             label="Payment Currency"
@@ -165,6 +165,7 @@ console.log(productServiceData);
             required
           >
             <UInput
+              v-model="state.taxInfo.paymentCurrencyId"
               class="w-full"
             />
           </UFormField>
@@ -190,36 +191,44 @@ console.log(productServiceData);
             name="detailedDescription"
             required
           >
-            <UInput class="w-full" />
+            <UInput v-model="productServiceData.detailedDescription" class="w-full" />
           </UFormField>
           <UFormField
             label="Quantity"
             name="quantity"
             required
           >
-            <UInput type="number" class="w-full" />
+            <UInput
+              v-model="productServiceData.quantity"
+              type="number"
+              class="w-full"
+            />
           </UFormField>
           <UFormField
             label="Unit Price"
             name="unitPrice"
             required
           >
-            <UInput type="number" class="w-full" />
+            <UInput
+              v-model="productServiceData.unitPrice"
+              type="number"
+              class="w-full"
+            />
           </UFormField>
           <div class="flex w-full flex-col md:flex-row gap-4 min-h-16">
             <UFormField
               label="Is Taxable"
               name="isTaxable"
             >
-              <USwitch v-model="state.isTaxable" @change="handleTaxableChange" />
+              <USwitch v-model="productServiceData.isTaxable" @change="handleTaxableChange" />
             </UFormField>
             <UFormField
-              v-if="state.isTaxable"
+              v-if="productServiceData.isTaxable"
               label="Withholding Type"
               name="withholdingType"
             >
               <USelect
-                v-model="state.withholdingType"
+                v-model="productServiceData.withholdingType"
                 :items="[{ label: 'VAT', value: 'vat' }, { label: 'Income Tax', value: 'incomeTax' }]"
                 class="min-w-12"
               />

@@ -25,8 +25,8 @@ const state = ref<NewPaymentComplementData>({
     taxRegimeId: 0,
   },
   paymentReception: {
-    paymentMethod: '',
-    paymentCurrency: '',
+    paymentMethod: '0',
+    paymentCurrency: 0,
     paymentDate: '',
     amount: 0,
     transactionNumber: '',
