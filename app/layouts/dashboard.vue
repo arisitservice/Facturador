@@ -89,13 +89,6 @@ const links = [[
           open.value = false;
         },
       },
-      {
-        label: 'Folders',
-        to: { name: 'nova-catalogs-folders' },
-        onSelect: () => {
-          open.value = false;
-        },
-      },
     ],
   },
   {
