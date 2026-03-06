@@ -6,9 +6,10 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    user: root
     volumes:
       # Montar código fuente para reflejar cambios en tiempo real
-      - .:/usr/src
+      - .:/usr/src:Z
       # Proteger node_modules del contenedor
       - /usr/src/node_modules
     develop:
