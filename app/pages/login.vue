@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui';
+import type { output } from 'zod';
 
-import { z } from 'zod';
+import { email, object, string } from 'zod';
 
 definePageMeta({
   layout: 'login',
@@ -35,12 +36,12 @@ const fields = ref<AuthFormField[]>([
   },
 ]);
 
-const schema = z.object({
-  email: z.email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters long'),
+const schema = object({
+  email: email('Invalid email address'),
+  password: string().min(6, 'Password must be at least 6 characters long'),
 });
 
-type Schema = z.output<typeof schema>;
+type Schema = output<typeof schema>;
 const error = ref(false);
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   try {
