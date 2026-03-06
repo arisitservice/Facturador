@@ -1,4 +1,11 @@
-export const paymentMethods = [
+import type { SelectItem } from '@nuxt/ui';
+
+export const paymentMethods: SelectItem[] = [
+  {
+    value: '0',
+    label: 'Select a payment method...',
+    disabled: true,
+  },
   {
     value: 'PUE',
     label: 'Pago en una sola exhibición',
@@ -9,7 +16,8 @@ export const paymentMethods = [
   },
 ];
 
-export const paymentForms = [
+export const paymentForms: SelectItem[] = [
+  { value: 0, label: 'Select a payment form...', disabled: true },
   { value: 1, label: 'Efectivo' },
   {
     value: 2,
