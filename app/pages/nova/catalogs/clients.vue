@@ -224,7 +224,7 @@ const pagination = ref({
         placeholder="Filter emails..."
       />
 
-      <div class="flex flex-wrap items-center gap-1.5">
+      <div class="flex items-center gap-1.5">
         <TableDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
           <UButton
             v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
