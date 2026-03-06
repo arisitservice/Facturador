@@ -1,12 +1,14 @@
 services:
   app:
     build: .
-    container_name: bun-nuxt-dev
+    container_name: facturador-dev
     ports:
       - "3000:3000"
     env_file:
       - .env
     volumes:
+      # Montar código fuente para reflejar cambios en tiempo real
+      - .:/usr/src
       # Proteger node_modules del contenedor
       - /usr/src/node_modules
     develop:
