@@ -12,11 +12,11 @@ services:
       - .:/usr/src
       # Proteger node_modules del contenedor
       - /usr/src/node_modules
-    # develop:
-    #   watch:
-    #     # Reconstruir cuando cambien variables de entorno
-    #     - path: ./.env
-    #       action: rebuild
+    develop:
+      watch:
+        # Reconstruir cuando cambien variables de entorno
+        - path: ./.env
+          action: rebuild
 
     #     # Sincronizar cambios de código fuente (con HMR)
     #     - path: ./app
@@ -62,33 +62,33 @@ services:
     #       target: /usr/src/server
     #       action: sync
 
-    #     # Reiniciar cuando cambien configuraciones
-    #     - path: ./nuxt.config.ts
-    #       target: /usr/src/nuxt.config.ts
-    #       action: restart
+        # Reiniciar cuando cambien configuraciones
+        - path: ./nuxt.config.ts
+          target: /usr/src/nuxt.config.ts
+          action: restart
 
-    #     - path: ./tsconfig.json
-    #       target: /usr/src/tsconfig.json
-    #       action: restart
+        - path: ./tsconfig.json
+          target: /usr/src/tsconfig.json
+          action: restart
 
-    #     - path: ./vitest.config.ts
-    #       target: /usr/src/vitest.config.ts
-    #       action: restart
+        - path: ./vitest.config.ts
+          target: /usr/src/vitest.config.ts
+          action: restart
 
-    #     - path: ./playwright.config.ts
-    #       target: /usr/src/playwright.config.ts
-    #       action: restart
+        - path: ./playwright.config.ts
+          target: /usr/src/playwright.config.ts
+          action: restart
 
-    #     - path: ./eslint.config.mjs
-    #       target: /usr/src/eslint.config.mjs
-    #       action: restart
+        - path: ./eslint.config.mjs
+          target: /usr/src/eslint.config.mjs
+          action: restart
 
-    #     # Reconstruir cuando cambien dependencias
-    #     - path: ./package.json
-    #       target: /usr/src/package.json
-    #       action: rebuild
+        # Reconstruir cuando cambien dependencias
+        - path: ./package.json
+          target: /usr/src/package.json
+          action: rebuild
 
-    #     - path: ./bun.lock
-    #       target: /usr/src/bun.lock
-    #       action: rebuild
+        - path: ./bun.lock
+          target: /usr/src/bun.lock
+          action: rebuild
     restart: unless-stopped
