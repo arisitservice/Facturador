@@ -9,7 +9,7 @@ const { isAddNewRecordSlideoverOpen } = useDashboard();
 
 const state = ref<NewClient>({
   name: '',
-  rfc: '',
+  taxId: '',
   postalCode: '',
   taxRegime: '',
   businessName: '',
@@ -41,10 +41,10 @@ async function onSubmit(event: FormSubmitEvent<NewClient>) {
     <UFormField
       label="R.F.C"
       placeholder="XAXX010101000"
-      name="rfc"
+      name="taxId"
       required
     >
-      <UInput v-model="state.rfc" class="w-full" />
+      <UInput v-model="state.taxId" class="w-full" />
     </UFormField>
     <UFormField
       label="Postal Code"
