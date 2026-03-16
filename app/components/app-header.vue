@@ -1,22 +1,20 @@
 <script setup lang="ts">
 const { isAuthenticated, isLoading } = useAuthStore();
-console.log('isAuthenticated:', isAuthenticated);
-console.log('isLoading:', isLoading);
 const route = useRoute();
 
 const items = computed(() => [{
   label: 'Docs',
-  to: '/docs',
+  // to: '/docs',
   active: route.path.startsWith('/docs'),
 }, {
   label: 'Pricing',
   to: '/pricing',
 }, {
   label: 'Blog',
-  to: '/blog',
+  // to: '/blog',
 }, {
   label: 'Changelog',
-  to: '/changelog',
+  // to: '/changelog',
 }]);
 </script>
 

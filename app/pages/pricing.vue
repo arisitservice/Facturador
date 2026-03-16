@@ -15,7 +15,6 @@ useSeoMeta({
   ogDescription: description,
 });
 
-console.log(page);
 // defineOgImageComponent('Saas');
 
 const isYearly = ref('0');
