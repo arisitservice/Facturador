@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { isAuthenticated } = useAuthStore();
+const { isAuthenticated, isLoading } = useAuthStore();
+console.log('isAuthenticated:', isAuthenticated);
+console.log('isLoading:', isLoading);
 const route = useRoute();
 
 const items = computed(() => [{
@@ -34,30 +36,36 @@ const items = computed(() => [{
     <template #right>
       <UColorModeButton />
 
-      <UButton
-        icon="i-lucide-log-in"
-        color="neutral"
-        variant="ghost"
-        :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
-        class="lg:hidden"
-      />
+      <ClientOnly>
+        <USkeleton
+          v-if="isLoading"
+          class="w-24 h-8 rounded-md"
+        />
+        <UButton
+          icon="i-lucide-log-in"
+          color="neutral"
+          variant="ghost"
+          :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
+          class="lg:hidden"
+        />
 
-      <UButton
+        <UButton
 
-        :label="isAuthenticated ? 'Dashboard' : 'Sign in'"
-        color="neutral"
-        variant="outline"
-        :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
-        class="hidden lg:inline-flex"
-      />
-      <UButton
-        v-if="!isAuthenticated"
-        label="Sign up"
-        color="neutral"
-        trailing-icon="i-lucide-arrow-right"
-        class="hidden lg:inline-flex"
-        to="/signup"
-      />
+          :label="isAuthenticated ? 'Dashboard' : 'Sign in'"
+          color="neutral"
+          variant="outline"
+          :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
+          class="hidden lg:inline-flex"
+        />
+        <UButton
+          v-if="!isAuthenticated"
+          label="Sign up"
+          color="neutral"
+          trailing-icon="i-lucide-arrow-right"
+          class="hidden lg:inline-flex"
+          to="/signup"
+        />
+      </ClientOnly>
     </template>
 
     <template #body>
