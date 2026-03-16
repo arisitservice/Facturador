@@ -20,18 +20,11 @@ export const useAuthStore = defineStore('useAuthStore', () => {
       const storedTokenType = localStorage.getItem(TOKEN_TYPE_KEY);
       const storedUser = localStorage.getItem(USER_KEY);
 
-      console.log('token: ', storedToken);
-      console.log('tokenType: ', storedTokenType);
-      console.log('storedUser: ', storedUser);
-      console.log('session:', session.value);
-
-      console.log(isAuthenticated.value);
       if (storedToken && storedTokenType && storedUser) {
         try {
           token.value = storedToken;
           tokenType.value = storedTokenType;
           session.value = JSON.parse(storedUser);
-          console.log('session after json.parse:', session.value);
         }
         catch (error) {
           console.error('Failed to restore session:', error);
