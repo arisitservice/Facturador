@@ -3,14 +3,13 @@ import type { ButtonProps } from '@nuxt/ui';
 
 import type { PageData } from '@/types/landing';
 
-const { data } = await useAsyncData('page', () => import(`@/assets/data/index.json`));
-const page = ref<PageData | undefined>(undefined);
-if (data.value) {
-  page.value = data.value as PageData;
-}
-const title = page.value?.seo?.title || page.value?.title;
-const description = page.value?.seo?.description || page.value?.description;
-const pageHeroLinks = page.value?.hero?.links as ButtonProps[];
+import data from '@/assets/data/index.json';
+
+const page = data as PageData;
+
+const title = page?.seo?.title || page?.title;
+const description = page?.seo?.description || page?.description;
+const pageHeroLinks = page?.hero?.links as ButtonProps[];
 
 useSeoMeta({
   titleTemplate: '',
@@ -48,8 +47,8 @@ useSeoMeta({
     </UPageSection>
 
     <UPageSection
-      :title="page.features.title"
-      :description="page.features.description"
+      :title="page.features?.title"
+      :description="page.features?.description"
     >
       <UPageGrid>
         <UPageCard
