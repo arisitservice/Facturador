@@ -2,20 +2,25 @@
 const { isAuthenticated, isLoading } = useAuthStore();
 const route = useRoute();
 
-const items = computed(() => [{
-  label: 'Docs',
-  // to: '/docs',
-  active: route.path.startsWith('/docs'),
-}, {
-  label: 'Pricing',
-  to: '/pricing',
-}, {
-  label: 'Blog',
-  // to: '/blog',
-}, {
-  label: 'Changelog',
-  // to: '/changelog',
-}]);
+const items = computed(() => [
+  {
+    label: 'Docs',
+    // to: '/docs',
+    active: route.path.startsWith('/docs'),
+  },
+  {
+    label: 'Pricing',
+    to: '/pricing',
+  },
+  {
+    label: 'Blog',
+    // to: '/blog',
+  },
+  {
+    label: 'Changelog',
+    // to: '/changelog',
+  },
+]);
 </script>
 
 <template>
@@ -43,16 +48,23 @@ const items = computed(() => [{
           icon="i-lucide-log-in"
           color="neutral"
           variant="ghost"
-          :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
+          :to="
+            isAuthenticated
+              ? { name: 'nova-dashboard' }
+              : { name: 'login' }
+          "
           class="lg:hidden"
         />
 
         <UButton
-
           :label="isAuthenticated ? 'Dashboard' : 'Sign in'"
           color="neutral"
           variant="outline"
-          :to="isAuthenticated ? { name: 'nova-dashboard' } : { name: 'login' }"
+          :to="
+            isAuthenticated
+              ? { name: 'nova-dashboard' }
+              : { name: 'login' }
+          "
           class="hidden lg:inline-flex"
         />
         <UButton
