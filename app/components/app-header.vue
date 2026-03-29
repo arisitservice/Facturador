@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { isAuthenticated, isLoading } = useAuthStore();
+const authStore = useAuthStore();
+const { isAuthenticated, isLoading } = storeToRefs(authStore);
 const route = useRoute();
 
 const items = computed(() => [

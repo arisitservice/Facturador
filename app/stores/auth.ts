@@ -5,60 +5,27 @@ const TOKEN_TYPE_KEY = 'aris_ti_nova_auth_token_type';
 const USER_KEY = 'aris_ti_nova_auth_user';
 
 export const useAuthStore = defineStore('useAuthStore', () => {
-  const session = ref<User | null>(null);
-  const token = ref<string | null>(null);
-  const tokenType = ref<string | null>(null);
+  // useLocalStorage auto-syncs with localStorage and is SSR-safe (no-op on server)
+  const session = useLocalStorage<User | null>(USER_KEY, null);
+  const token = useLocalStorage<string | null>(TOKEN_KEY, null);
+  const tokenType = useLocalStorage<string | null>(TOKEN_TYPE_KEY, null);
   const isLoading = ref(false);
 
   const isAuthenticated = computed(() => !!session.value && !!token.value);
   const user = computed(() => session.value || null);
 
-  // Restore session from localStorage on store initialization
-  function restoreSession() {
-    if (import.meta.client) {
-      const storedToken = localStorage.getItem(TOKEN_KEY);
-      const storedTokenType = localStorage.getItem(TOKEN_TYPE_KEY);
-      const storedUser = localStorage.getItem(USER_KEY);
-
-      if (storedToken && storedTokenType && storedUser) {
-        try {
-          token.value = storedToken;
-          tokenType.value = storedTokenType;
-          session.value = JSON.parse(storedUser);
-        }
-        catch (error) {
-          console.error('Failed to restore session:', error);
-          clearSession();
-        }
-      }
-    }
-  }
-
-  // Save session to localStorage
   function saveSession(authToken: string, authTokenType: string, authUser: User) {
-    if (import.meta.client) {
-      localStorage.setItem(TOKEN_KEY, authToken);
-      localStorage.setItem(TOKEN_TYPE_KEY, authTokenType);
-      localStorage.setItem(USER_KEY, JSON.stringify(authUser));
-    }
     token.value = authToken;
     tokenType.value = authTokenType;
     session.value = authUser;
   }
 
-  // Clear session from localStorage
   function clearSession() {
-    if (import.meta.client) {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(TOKEN_TYPE_KEY);
-      localStorage.removeItem(USER_KEY);
-    }
     token.value = null;
     tokenType.value = null;
     session.value = null;
   }
 
-  // Get authorization header
   function getAuthHeader() {
     if (token.value && tokenType.value) {
       return `${tokenType.value} ${token.value}`;
@@ -80,8 +47,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
 
       return response;
     }
-    catch (error) {
-      console.error('Login error:', process.env.NODE_ENV === 'development' ? error : 'An error occurred during login.');
+    catch {
       return {
         success: false,
         message: 'An error occurred during login. Please try again.',
@@ -93,23 +59,8 @@ export const useAuthStore = defineStore('useAuthStore', () => {
   }
 
   async function signOut() {
-    // Optional: Call logout endpoint on your Laravel API
-    // try {
-    //   await $fetch('http://erp.almacenadoravica.com/erp/public/api/logout', {
-    //     method: 'POST',
-    //     headers: {
-    //       Authorization: getAuthHeader() || '',
-    //     },
-    //   });
-    // } catch (error) {
-    //   console.error('Logout error:', error);
-    // }
-
     clearSession();
   }
-
-  // Initialize session on store creation
-  restoreSession();
 
   return {
     isLoading,
@@ -121,6 +72,9 @@ export const useAuthStore = defineStore('useAuthStore', () => {
     signIn,
     signOut,
     getAuthHeader,
-    restoreSession,
   };
 });
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot));
+}

@@ -10,7 +10,8 @@ definePageMeta({
 });
 
 const authStore = useAuthStore();
-const { signIn, isAuthenticated } = authStore;
+const { signIn } = authStore;
+const { isAuthenticated } = storeToRefs(authStore);
 const isLoading = ref(false);
 // Redirect if already authenticated
 onMounted(() => {
@@ -59,9 +60,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       name: 'nova-dashboard',
     });
   }
-  catch (err) {
+  catch {
     error.value = true;
-    console.error('Login error:', process.env.NODE_ENV === 'development' ? err : 'An error occurred during login.');
   }
   finally {
     isLoading.value = false;

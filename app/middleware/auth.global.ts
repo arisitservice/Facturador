@@ -1,7 +1,4 @@
-export default defineNuxtRouteMiddleware(async (_to, _from) => {
-  const authStore = useAuthStore();
-
-  if (!authStore.user) {
-    authStore.restoreSession();
-  }
+export default defineNuxtRouteMiddleware((_to, _from) => {
+  // Session is automatically restored from localStorage via useLocalStorage in useAuthStore.
+  // No manual restoration needed here.
 });
