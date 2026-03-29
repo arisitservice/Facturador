@@ -28,6 +28,7 @@ const columnVisibility = ref();
 const rowSelection = ref({ 1: true });
 
 const { data, status } = await useFetch<User[]>('/api/clients', {
+  key: 'clients-list',
   lazy: true,
 });
 
