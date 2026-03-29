@@ -9,12 +9,14 @@ definePageMeta({
   name: 'nova-billing-credit-notes-new-credit-note',
 });
 
-const { data: clients } = await useBilling().client.getAllClients();
+const { data: clients, pending } = useAsyncData('clients-list', () => useBilling().client.getAllClients(), { lazy: true });
 
-const clientList = clients?.map((client, i) => ({
-  label: `client number ${i}`,
-  value: i,
-})) || [];
+const clientList = computed(() =>
+  clients.value?.data?.map((client, i) => ({
+    label: `client number ${i}`,
+    value: i,
+  })) ?? [],
+);
 
 const state = ref<NewCreditNoteData>({
   client: {
@@ -46,8 +48,6 @@ function handleTaxableChange() {
     productServiceData.value.withholdingType = undefined;
   }
 }
-
-console.log(productServiceData);
 </script>
 
 <template>
@@ -70,7 +70,12 @@ console.log(productServiceData);
           :schema="clientDataSchema"
           class="flex flex-col gap-4"
         >
+          <SkeletonFormCard
+            v-if="pending"
+            :field-count="1"
+          />
           <UFormField
+            v-else
             label="Client"
             name="clientId"
             required
