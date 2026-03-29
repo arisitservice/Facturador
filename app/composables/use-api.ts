@@ -1,12 +1,11 @@
 import type { UseFetchOptions } from 'nuxt/app';
 
-const API_BASE_URL = 'http://erp.almacenadoravica.com/erp/public/api';
-
 export function useApi<T>(url: string, options: UseFetchOptions<T> = {}) {
+  const { public: { apiBase } } = useRuntimeConfig();
   const authStore = useAuthStore();
 
   const defaults: UseFetchOptions<T> = {
-    baseURL: API_BASE_URL,
+    baseURL: apiBase,
     onRequest({ options }) {
       // Add authorization header if token exists
       const authHeader = authStore.getAuthHeader();
@@ -39,11 +38,12 @@ export function useApi<T>(url: string, options: UseFetchOptions<T> = {}) {
 
 // For $fetch usage (non-reactive)
 export function useApiFetch<T>(url: string, options?: any) {
+  const { public: { apiBase } } = useRuntimeConfig();
   const authStore = useAuthStore();
 
   const authHeader = authStore.getAuthHeader();
 
-  return $fetch<T>(`${API_BASE_URL}${url}`, {
+  return $fetch<T>(`${apiBase}${url}`, {
     ...options,
     headers: {
       ...(options?.headers || {}),
