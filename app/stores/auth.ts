@@ -1,3 +1,5 @@
+import { skipHydrate } from 'pinia';
+
 import type { LoginResponse, User } from '~/types/facturador';
 
 const TOKEN_KEY = 'aris_ti_nova_auth_token';
@@ -5,10 +7,10 @@ const TOKEN_TYPE_KEY = 'aris_ti_nova_auth_token_type';
 const USER_KEY = 'aris_ti_nova_auth_user';
 
 export const useAuthStore = defineStore('useAuthStore', () => {
-  // useLocalStorage auto-syncs with localStorage and is SSR-safe (no-op on server)
-  const session = useLocalStorage<User | null>(USER_KEY, null);
-  const token = useLocalStorage<string | null>(TOKEN_KEY, null);
-  const tokenType = useLocalStorage<string | null>(TOKEN_TYPE_KEY, null);
+  // skipHydrate prevents Nuxt SSR payload from overwriting localStorage values on page refresh
+  const session = skipHydrate(useLocalStorage<User | null>(USER_KEY, null));
+  const token = skipHydrate(useLocalStorage<string | null>(TOKEN_KEY, null));
+  const tokenType = skipHydrate(useLocalStorage<string | null>(TOKEN_TYPE_KEY, null));
   const isLoading = ref(false);
 
   const isAuthenticated = computed(() => !!session.value && !!token.value);
