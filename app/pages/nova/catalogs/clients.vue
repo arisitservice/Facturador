@@ -7,6 +7,8 @@ import { upperFirst } from 'scule';
 
 import type { User } from '~/types/facturador';
 
+import { dummyTableData } from '~/assets/data/tables/dummy';
+
 definePageMeta({
   name: 'nova-catalogs-clients',
 });
@@ -27,10 +29,11 @@ const columnFilters = ref([{
 const columnVisibility = ref();
 const rowSelection = ref({ 1: true });
 
-const { data, status } = await useFetch<User[]>('/api/clients', {
-  key: 'clients-list',
-  lazy: true,
-});
+// TODO: Replace with actual data fetching when endpoint is ready
+// const { data, status } = await useFetch<User[]>('/api/clients', {
+//   key: 'clients-list',
+//   lazy: true,
+// });
 
 function getRowItems(row: Row<User>) {
   return [
@@ -217,7 +220,22 @@ const pagination = ref({
 
 <template>
   <div>
-    <div class="flex flex-wrap items-center justify-between gap-1.5">
+    <div
+      v-if="status === 'pending'"
+      class="flex flex-wrap items-center justify-between gap-1.5"
+    >
+      <USkeleton class="h-8 max-w-sm w-full rounded-md" />
+      <div class="flex items-center gap-1.5">
+        <USkeleton class="h-8 w-20 rounded-md" />
+        <USkeleton class="h-8 w-28 rounded-md" />
+        <USkeleton class="h-8 w-24 rounded-md" />
+      </div>
+    </div>
+
+    <div
+      v-else
+      class="flex flex-wrap items-center justify-between gap-1.5"
+    >
       <UInput
         v-model="email"
         class="max-w-sm"
@@ -293,7 +311,7 @@ const pagination = ref({
         getPaginationRowModel: getPaginationRowModel(),
       }"
       class="shrink-0"
-      :data="data"
+      :data="dummyTableData"
       :columns="columns"
       :loading="status === 'pending'"
       :ui="{

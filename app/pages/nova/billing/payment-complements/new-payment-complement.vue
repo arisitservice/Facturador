@@ -9,12 +9,14 @@ definePageMeta({
   name: 'nova-billing-payment-complements-new-payment-complement',
 });
 
-const { data: clients } = await useBilling().client.getAllClients();
+const { data: clients, pending } = useAsyncData('clients-list', () => useBilling().client.getAllClients(), { lazy: true });
 
-const clientList = clients?.map((client, i) => ({
-  label: `client number ${i}`,
-  value: i,
-})) || [];
+const clientList = computed(() =>
+  clients.value?.data?.map((client, i) => ({
+    label: `client number ${i}`,
+    value: i,
+  })) ?? [],
+);
 
 const state = ref<NewPaymentComplementData>({
   client: {
@@ -69,7 +71,12 @@ function removeFolio(index: number) {
           :schema="clientDataSchema"
           class="flex flex-col gap-4"
         >
+          <SkeletonFormCard
+            v-if="pending"
+            :field-count="1"
+          />
           <UFormField
+            v-else
             label="Client"
             name="clientId"
             required
