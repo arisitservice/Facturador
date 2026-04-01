@@ -51,3 +51,21 @@ type LoginResponse = {
   token: string;
   user: User;
 };
+
+export type SignUpPayload = {
+  tenant: { name: string; company: string };
+  owner: { username: string; email: string; password: string };
+};
+
+export type SignUpError = {
+  property: string;
+  errorMessage: string;
+};
+
+export type SignUpResponse = {
+  payload: null;
+  isSuccess: boolean;
+  message: string;
+  statusCode: number;
+  errors: SignUpError[];
+};

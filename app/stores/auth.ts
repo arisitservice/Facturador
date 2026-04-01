@@ -1,6 +1,6 @@
 import { skipHydrate } from 'pinia';
 
-import type { LoginResponse, User } from '~/types/facturador';
+import type { LoginResponse, SignUpPayload, SignUpResponse, User } from '~/types/facturador';
 
 const TOKEN_KEY = 'aris_ti_nova_auth_token';
 const TOKEN_TYPE_KEY = 'aris_ti_nova_auth_token_type';
@@ -60,6 +60,30 @@ export const useAuthStore = defineStore('useAuthStore', () => {
     }
   }
 
+  async function signUp(payload: SignUpPayload) {
+    isLoading.value = true;
+    try {
+      // const response = await useApiFetch<SignUpResponse>('/api/main/Tenants/Create', {
+      const response = await $fetch<SignUpResponse>('http://localhost:8080/api/main/Tenants/Create', {
+        method: 'POST',
+        body: payload,
+      });
+      return response;
+    }
+    catch {
+      return {
+        payload: null,
+        isSuccess: false,
+        message: 'An error occurred during sign up. Please try again.',
+        statusCode: 0,
+        errors: [],
+      } satisfies SignUpResponse;
+    }
+    finally {
+      isLoading.value = false;
+    }
+  }
+
   async function signOut() {
     clearSession();
   }
@@ -72,6 +96,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
     token,
     tokenType,
     signIn,
+    signUp,
     signOut,
     getAuthHeader,
   };
