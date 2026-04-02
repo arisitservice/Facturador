@@ -3,6 +3,8 @@ import type { AvatarProps } from '@nuxt/ui';
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced';
 export type SaleStatus = 'paid' | 'failed' | 'refunded';
 
+export type LoginUser = Pick<User, 'id' | 'email'> & { username: string; userType: string; token: string; expiresAt: string };
+
 export type User = {
   id: number;
   name: string;
@@ -46,10 +48,20 @@ export type Range = {
 };
 
 type LoginResponse = {
-  success: boolean;
-  token_type: string;
+  payload: LoginPayload | null;
+  isSuccess: boolean;
+  message: string;
+  statusCode: number;
+  errors: SignUpError[];
+};
+
+export type LoginPayload = {
+  id: number;
+  username: string;
+  email: string;
+  userType: string;
   token: string;
-  user: User;
+  expiresAt: string;
 };
 
 export type SignUpPayload = {
@@ -63,9 +75,24 @@ export type SignUpError = {
 };
 
 export type SignUpResponse = {
-  payload: null;
+  payload: Payload | null;
   isSuccess: boolean;
   message: string;
   statusCode: number;
   errors: SignUpError[];
+};
+
+export type Payload = {
+  tenantId: string;
+  name: string;
+  company: string;
+  email: string;
+  subdomain: string;
+  owner: Owner;
+};
+
+export type Owner = {
+  id: number;
+  username: string;
+  email: string;
 };
