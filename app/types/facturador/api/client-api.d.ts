@@ -1,37 +1,21 @@
+export type ClientsApiResponse<T> = {
+  payload: T | null;
+  isSuccess: boolean;
+  message: string | null;
+  statusCode: number;
+  errors: { property: string; errorMessage: string }[] | null;
+};
+
 export type Client = {
-  generalInfo: GeneralInfo;
-  taxInfo: TaxInfo | null;
-  taxRegime: TaxRegime;
-};
-
-export type GeneralInfo = {
-  clientId: number;
+  id: number;
   name: string;
-  appAccess: string;
-};
-
-export type TaxRegime = {
-  satCode: number;
-  description: string;
-  status?: boolean;
+  businessName: string;
+  taxId: string;
   taxRegimeId: number;
+  taxAddress: string;
+  postalCode: string;
 };
 
-export type TaxInfo = {
-  postalCode?: number;
-  clientId?: number;
-  clientDetailId?: number;
-  taxRegimeId?: number;
-  legalName?: string;
-  taxRegimeData?: TaxRegimeData;
-  taxId?: string; // RFC
-  serviceType?: number;
-  taxRegimeDescription?: string;
-};
+export type CreateClientPayload = Omit<Client, 'id'>;
 
-export type TaxRegimeData = {
-  satCode: string;
-  description: string;
-  status?: boolean;
-  taxRegimeId: number;
-};
+export type UpdateClientPayload = Partial<CreateClientPayload>;

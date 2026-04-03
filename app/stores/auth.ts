@@ -37,7 +37,8 @@ export const useAuthStore = defineStore('useAuthStore', () => {
 
   function getAuthHeader() {
     if (token.value && tokenType.value) {
-      return `${tokenType.value} ${token.value}`;
+      // return `${tokenType.value} ${token.value}`;
+      return `Bearer ${token.value}`;
     }
     return null;
   }
@@ -48,7 +49,8 @@ export const useAuthStore = defineStore('useAuthStore', () => {
       const response = await useApiFetch<LoginResponse>('/Tenant/v1/Auth/Login', {
         method: 'POST',
         headers: {
-          'X-Tenant-Id': payload.value?.tenantId || '',
+          // Test only id for aaaa@aaaa.com user
+          'X-Tenant-Id': '885b4b63-3fda-4c27-9f3f-19ae61236453',
         },
         body: { email, password },
       });
