@@ -1,11 +1,3 @@
-export type ClientsApiResponse<T> = {
-  payload: T | null;
-  isSuccess: boolean;
-  message: string | null;
-  statusCode: number;
-  errors: { property: string; errorMessage: string }[] | null;
-};
-
 export type Client = {
   id: number;
   name: string;

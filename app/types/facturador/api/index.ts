@@ -1,5 +1,7 @@
 export type ApiResponse<T> = {
-  success: boolean;
-  data: T | null;
-  message?: string;
+  payload: T | null;
+  isSuccess: boolean;
+  message: string | null;
+  statusCode: number;
+  errors: { property: string; errorMessage: string }[] | null;
 };

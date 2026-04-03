@@ -1,9 +1,10 @@
-import type { Client, ClientsApiResponse, CreateClientPayload, UpdateClientPayload } from '~/types/facturador/api/client-api';
+import type { ApiResponse } from '~/types/facturador/api';
+import type { Client, CreateClientPayload, UpdateClientPayload } from '~/types/facturador/api/client-api';
 
 import { useClient } from '~/composables/clients/use-client';
 
-function emptyError(message: string): ClientsApiResponse<never> {
-  return { payload: null, isSuccess: false, message, statusCode: 0, errors: [] };
+function emptyError(message: string): ApiResponse<never> {
+  return { payload: null, isSuccess: false, message, statusCode: 0, errors: null };
 }
 
 export const useClientsStore = defineStore('useClientsStore', () => {
@@ -48,7 +49,7 @@ export const useClientsStore = defineStore('useClientsStore', () => {
     }
   }
 
-  async function createClient(payload: CreateClientPayload): Promise<ClientsApiResponse<Client>> {
+  async function createClient(payload: CreateClientPayload): Promise<ApiResponse<Client>> {
     isSaving.value = true;
     try {
       const response = await create(payload);
@@ -65,7 +66,7 @@ export const useClientsStore = defineStore('useClientsStore', () => {
     }
   }
 
-  async function updateClient(id: number, payload: UpdateClientPayload) {
+  async function updateClient(id: number, payload: UpdateClientPayload): Promise<ApiResponse<Client>> {
     isSaving.value = true;
     try {
       const response = await update(id, payload);
@@ -85,7 +86,7 @@ export const useClientsStore = defineStore('useClientsStore', () => {
     }
   }
 
-  async function deleteClient(id: number) {
+  async function deleteClient(id: number): Promise<ApiResponse<null>> {
     isSaving.value = true;
     try {
       const response = await remove(id);
