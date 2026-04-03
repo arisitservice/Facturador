@@ -2,31 +2,34 @@
 import type { FormSubmitEvent } from '@nuxt/ui';
 
 import type { NewClient } from '~/lib/schemas/catalogs';
+import type { Client } from '~/types/facturador/api/client-api';
 
 import { newClientSchema } from '~/lib/schemas/catalogs';
 
-const { isAddNewRecordSlideoverOpen } = useDashboard();
+const props = defineProps<{ client: Client }>();
+const emit = defineEmits<{ close: [] }>();
+
 const clientsStore = useClientsStore();
 const toast = useToast();
 
 const state = ref<NewClient>({
-  name: '',
-  businessName: '',
-  taxId: '',
-  taxRegimeId: 0,
-  taxAddress: '',
-  postalCode: '',
+  name: props.client.name,
+  businessName: props.client.businessName,
+  taxId: props.client.taxId,
+  taxRegimeId: props.client.taxRegimeId,
+  taxAddress: props.client.taxAddress,
+  postalCode: props.client.postalCode,
 });
 
 async function onSubmit(event: FormSubmitEvent<NewClient>) {
-  const response = await clientsStore.createClient(event.data);
+  const response = await clientsStore.updateClient(props.client.id, event.data);
 
   if (response.isSuccess) {
-    toast.add({ title: 'Cliente creado', description: `${event.data.name} fue agregado correctamente.`, color: 'success' });
-    isAddNewRecordSlideoverOpen.value = false;
+    toast.add({ title: 'Cliente actualizado', description: `${event.data.name} fue actualizado correctamente.`, color: 'success' });
+    emit('close');
   }
   else {
-    toast.add({ title: 'Error', description: response.message ?? 'Ocurrió un error al crear el cliente.', color: 'error' });
+    toast.add({ title: 'Error', description: response.message ?? 'Ocurrió un error al actualizar el cliente.', color: 'error' });
   }
 }
 </script>
@@ -116,10 +119,10 @@ async function onSubmit(event: FormSubmitEvent<NewClient>) {
         label="Cancelar"
         color="neutral"
         variant="subtle"
-        @click="isAddNewRecordSlideoverOpen = false"
+        @click="emit('close')"
       />
       <UButton
-        label="Crear"
+        label="Guardar"
         color="primary"
         variant="solid"
         type="submit"

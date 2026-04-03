@@ -5,50 +5,58 @@ import type { Row } from '@tanstack/table-core';
 import { getPaginationRowModel } from '@tanstack/table-core';
 import { upperFirst } from 'scule';
 
-import type { User } from '~/types/facturador';
-
-import { dummyTableData } from '~/assets/data/tables/dummy';
+import type { Client } from '~/types/facturador/api/client-api';
 
 definePageMeta({
   name: 'nova-catalogs-clients',
 });
 
-const UAvatar = resolveComponent('UAvatar');
 const UButton = resolveComponent('UButton');
-const UBadge = resolveComponent('UBadge');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
 const UCheckbox = resolveComponent('UCheckbox');
 
 const toast = useToast();
 const table = useTemplateRef('table');
+const clientsStore = useClientsStore();
+
+const isEditSlideoverOpen = ref(false);
+const clientToEdit = ref<Client | null>(null);
 
 const columnFilters = ref([{
-  id: 'email',
+  id: 'name',
   value: '',
 }]);
 const columnVisibility = ref();
-const rowSelection = ref({ 1: true });
+const rowSelection = ref({});
 
-// TODO: Replace with actual data fetching when endpoint is ready
-// const { data, status } = await useFetch<User[]>('/api/clients', {
-//   key: 'clients-list',
-//   lazy: true,
-// });
+await clientsStore.fetchClients();
 
-function getRowItems(row: Row<User>) {
+function openEdit(client: Client) {
+  clientToEdit.value = client;
+  isEditSlideoverOpen.value = true;
+}
+
+function getRowItems(row: Row<Client>) {
   return [
     {
       type: 'label',
-      label: 'Actions',
+      label: 'Acciones',
     },
     {
-      label: 'Copy customer ID',
+      label: 'Editar cliente',
+      icon: 'i-lucide-pencil',
+      onSelect() {
+        openEdit(row.original);
+      },
+    },
+    {
+      label: 'Copiar ID',
       icon: 'i-lucide-copy',
       onSelect() {
         navigator.clipboard.writeText(row.original.id.toString());
         toast.add({
-          title: 'Copied to clipboard',
-          description: 'Customer ID copied to clipboard',
+          title: 'Copiado',
+          description: 'ID del cliente copiado al portapapeles',
         });
       },
     },
@@ -56,31 +64,22 @@ function getRowItems(row: Row<User>) {
       type: 'separator',
     },
     {
-      label: 'View customer details',
-      icon: 'i-lucide-list',
-    },
-    {
-      label: 'View customer payments',
-      icon: 'i-lucide-wallet',
-    },
-    {
-      type: 'separator',
-    },
-    {
-      label: 'Delete customer',
+      label: 'Eliminar cliente',
       icon: 'i-lucide-trash',
       color: 'error',
-      onSelect() {
+      async onSelect() {
+        const response = await clientsStore.deleteClient(row.original.id);
         toast.add({
-          title: 'Customer deleted',
-          description: 'The customer has been deleted.',
+          title: response.isSuccess ? 'Cliente eliminado' : 'Error',
+          description: response.message ?? undefined,
+          color: response.isSuccess ? 'success' : 'error',
         });
       },
     },
   ];
 }
 
-const columns: TableColumn<User>[] = [
+const columns: TableColumn<Client>[] = [
   {
     id: 'select',
     header: ({ table }) =>
@@ -105,29 +104,21 @@ const columns: TableColumn<User>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-3' }, [
-        h(UAvatar, {
-          ...row.original.avatar,
-          size: 'lg',
-        }),
-        h('div', undefined, [
-          h('p', { class: 'font-medium text-highlighted' }, row.original.name),
-          h('p', { class: '' }, `@${row.original.name}`),
-        ]),
-      ]);
-    },
+    header: 'Nombre',
+    cell: ({ row }) => h('p', { class: 'font-medium text-highlighted' }, row.original.name),
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'businessName',
+    header: 'Razón Social',
+  },
+  {
+    accessorKey: 'taxId',
     header: ({ column }) => {
       const isSorted = column.getIsSorted();
-
       return h(UButton, {
         color: 'neutral',
         variant: 'ghost',
-        label: 'Email',
+        label: 'RFC',
         icon: isSorted
           ? isSorted === 'asc'
             ? 'i-lucide-arrow-up-narrow-wide'
@@ -139,24 +130,8 @@ const columns: TableColumn<User>[] = [
     },
   },
   {
-    accessorKey: 'location',
-    header: 'Location',
-    cell: ({ row }) => row.original.location,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    filterFn: 'equals',
-    cell: ({ row }) => {
-      const color = {
-        subscribed: 'success' as const,
-        unsubscribed: 'error' as const,
-        bounced: 'warning' as const,
-      }[row.original.status];
-
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-        row.original.status);
-    },
+    accessorKey: 'postalCode',
+    header: 'C.P.',
   },
   {
     id: 'actions',
@@ -185,30 +160,12 @@ const columns: TableColumn<User>[] = [
   },
 ];
 
-const statusFilter = ref('all');
-
-watch(() => statusFilter.value, (newVal) => {
-  if (!table?.value?.tableApi)
-    return;
-
-  const statusColumn = table.value.tableApi.getColumn('status');
-  if (!statusColumn)
-    return;
-
-  if (newVal === 'all') {
-    statusColumn.setFilterValue(undefined);
-  }
-  else {
-    statusColumn.setFilterValue(newVal);
-  }
-});
-
-const email = computed({
+const nameFilter = computed({
   get: (): string => {
-    return (table.value?.tableApi?.getColumn('email')?.getFilterValue() as string) || '';
+    return (table.value?.tableApi?.getColumn('name')?.getFilterValue() as string) || '';
   },
   set: (value: string) => {
-    table.value?.tableApi?.getColumn('email')?.setFilterValue(value || undefined);
+    table.value?.tableApi?.getColumn('name')?.setFilterValue(value || undefined);
   },
 });
 
@@ -221,7 +178,7 @@ const pagination = ref({
 <template>
   <div>
     <div
-      v-if="status === 'pending'"
+      v-if="clientsStore.isLoading"
       class="flex flex-wrap items-center justify-between gap-1.5"
     >
       <USkeleton class="h-8 max-w-sm w-full rounded-md" />
@@ -237,41 +194,13 @@ const pagination = ref({
       class="flex flex-wrap items-center justify-between gap-1.5"
     >
       <UInput
-        v-model="email"
+        v-model="nameFilter"
         class="max-w-sm"
         icon="i-lucide-search"
-        placeholder="Filter emails..."
+        placeholder="Filter by name..."
       />
 
       <div class="flex items-center gap-1.5">
-        <TableDeleteModal :count="table?.tableApi?.getFilteredSelectedRowModel().rows.length">
-          <UButton
-            v-if="table?.tableApi?.getFilteredSelectedRowModel().rows.length"
-            label="Delete"
-            color="error"
-            variant="subtle"
-            icon="i-lucide-trash"
-          >
-            <template #trailing>
-              <UKbd>
-                {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length }}
-              </UKbd>
-            </template>
-          </UButton>
-        </TableDeleteModal>
-
-        <USelect
-          v-model="statusFilter"
-          :items="[
-            { label: 'All', value: 'all' },
-            { label: 'Subscribed', value: 'subscribed' },
-            { label: 'Unsubscribed', value: 'unsubscribed' },
-            { label: 'Bounced', value: 'bounced' },
-          ]"
-          :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
-          placeholder="Filter status"
-          class="min-w-28"
-        />
         <UDropdownMenu
           :items="
             table?.tableApi
@@ -292,7 +221,7 @@ const pagination = ref({
           :content="{ align: 'end' }"
         >
           <UButton
-            label="Display"
+            label="Columns"
             color="neutral"
             variant="outline"
             trailing-icon="i-lucide-settings-2"
@@ -311,9 +240,9 @@ const pagination = ref({
         getPaginationRowModel: getPaginationRowModel(),
       }"
       class="shrink-0"
-      :data="dummyTableData"
+      :data="clientsStore.clients"
       :columns="columns"
-      :loading="status === 'pending'"
+      :loading="clientsStore.isLoading"
       :ui="{
         base: 'table-fixed border-separate border-spacing-0',
         thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
@@ -339,6 +268,19 @@ const pagination = ref({
         />
       </div>
     </div>
+    <USlideover
+      v-model:open="isEditSlideoverOpen"
+      title="Editar cliente"
+      @after-leave="clientToEdit = null"
+    >
+      <template #body>
+        <CatalogsFormsEditClient
+          v-if="clientToEdit"
+          :client="clientToEdit"
+          @close="isEditSlideoverOpen = false"
+        />
+      </template>
+    </USlideover>
   </div>
 </template>
 

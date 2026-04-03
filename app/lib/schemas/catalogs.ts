@@ -4,11 +4,11 @@ import { boolean, number, object, string } from 'zod';
 
 export const newClientSchema = object({
   name: string().min(3, 'name must be at least 3 characters'),
-  taxId: string().min(10, 'tax ID must be at least 10 characters'),
-  postalCode: string().min(5, 'postal code must be at least 5 characters'),
-  taxRegime: string().min(3, 'tax regime must be at least 3 characters'),
   businessName: string().min(3, 'business name must be at least 3 characters'),
-  accessApp: string().min(3, 'access app must be at least 3 characters'),
+  taxId: string().min(10, 'tax ID must be at least 10 characters'),
+  taxRegimeId: number().int().positive('tax regime is required'),
+  taxAddress: string().min(3, 'tax address must be at least 3 characters'),
+  postalCode: string().min(5, 'postal code must be at least 5 characters'),
 });
 
 export type NewClient = infer_<typeof newClientSchema>;

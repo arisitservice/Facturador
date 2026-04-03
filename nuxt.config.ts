@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   runtimeConfig: {
     public: {
-      apiBase: 'http://erp.almacenadoravica.com/erp/public/api',
+      apiBase: 'http://localhost:8080/api',
     },
   },
   devServer: {

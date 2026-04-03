@@ -11,11 +11,10 @@ definePageMeta({
 
 const authStore = useAuthStore();
 const { signIn } = authStore;
-const { isAuthenticated } = storeToRefs(authStore);
-const isLoading = ref(false);
+const { isLoading, isAuthenticated } = storeToRefs(authStore);
 // Redirect if already authenticated
 onMounted(() => {
-  if (isAuthenticated) {
+  if (isAuthenticated.value) {
     navigateTo({ name: 'nova-dashboard' });
   }
 });
@@ -46,13 +45,10 @@ type Schema = output<typeof schema>;
 const error = ref(false);
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   try {
-    isLoading.value = true;
     const response = await signIn(payload.data);
 
-    if (!response.success) {
+    if (!response.isSuccess) {
       error.value = true;
-      // useAuthStore().setToken(response.token);
-      // useAuthStore().setUser(response.user);
       return;
     }
 
@@ -62,9 +58,6 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
   }
   catch {
     error.value = true;
-  }
-  finally {
-    isLoading.value = false;
   }
 }
 </script>

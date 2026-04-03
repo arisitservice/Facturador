@@ -9,13 +9,17 @@ definePageMeta({
   name: 'nova-billing-payment-complements-new-payment-complement',
 });
 
-const { data: clients, pending } = useAsyncData('clients-list', () => useBilling().client.getAllClients(), { lazy: true });
+const clientsStore = useClientsStore();
+
+if (!clientsStore.clients.length) {
+  await clientsStore.fetchClients();
+}
 
 const clientList = computed(() =>
-  clients.value?.data?.map((client, i) => ({
-    label: `client number ${i}`,
-    value: i,
-  })) ?? [],
+  clientsStore.clients.map(client => ({
+    label: `${client.name} — ${client.taxId}`,
+    value: client.id,
+  })),
 );
 
 const state = ref<NewPaymentComplementData>({
@@ -49,6 +53,19 @@ function addFolio() {
 function removeFolio(index: number) {
   state.value.paymentReception.fiscalFolios.splice(index, 1);
 }
+
+const selectedClientId = ref<number | undefined>(undefined);
+
+watch(selectedClientId, (id) => {
+  const client = clientsStore.clients.find(c => c.id === id);
+  if (!client)
+    return;
+  state.value.client.clientId = client.id;
+  state.value.client.taxId = client.taxId;
+  state.value.client.businessName = client.businessName;
+  state.value.client.postalCode = client.postalCode;
+  state.value.client.taxRegimeId = client.taxRegimeId;
+});
 </script>
 
 <template>
@@ -72,7 +89,7 @@ function removeFolio(index: number) {
           class="flex flex-col gap-4"
         >
           <SkeletonFormCard
-            v-if="pending"
+            v-if="clientsStore.isLoading"
             :field-count="1"
           />
           <UFormField
@@ -82,8 +99,9 @@ function removeFolio(index: number) {
             required
           >
             <USelect
-              v-model="state.client.clientId"
+              v-model="selectedClientId"
               :items="clientList"
+              placeholder="Select a client..."
             />
           </UFormField>
           <UFormField
@@ -91,28 +109,44 @@ function removeFolio(index: number) {
             name="taxRegimeId"
             required
           >
-            <UInput disabled class="w-full" />
+            <UInput
+              v-model.number="state.client.taxRegimeId"
+              disabled
+              class="w-full"
+            />
           </UFormField>
           <UFormField
             label="Tax ID"
             name="taxId"
             required
           >
-            <UInput disabled class="w-full" />
+            <UInput
+              v-model="state.client.taxId"
+              disabled
+              class="w-full"
+            />
           </UFormField>
           <UFormField
             label="Business Name"
             name="businessName"
             required
           >
-            <UInput disabled class="w-full" />
+            <UInput
+              v-model="state.client.businessName"
+              disabled
+              class="w-full"
+            />
           </UFormField>
           <UFormField
             label="Postal Code"
             name="postalCode"
             required
           >
-            <UInput disabled class="w-full" />
+            <UInput
+              v-model="state.client.postalCode"
+              disabled
+              class="w-full"
+            />
           </UFormField>
         </UForm>
       </UCard>
