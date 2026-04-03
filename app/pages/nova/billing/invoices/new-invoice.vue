@@ -9,14 +9,19 @@ definePageMeta({
   name: 'nova-billing-invoices-new-invoice',
 });
 
-const { data: clients, pending } = useAsyncData('clients-list', () => useBilling().client.getAllClients(), { lazy: true });
+const clientsStore = useClientsStore();
+
+if (!clientsStore.clients.length) {
+  await clientsStore.fetchClients();
+}
 
 const clientList = computed(() =>
-  clients.value?.payload?.map((client, i) => ({
-    label: `client number ${i}`,
-    value: i,
-  })) ?? [],
+  clientsStore.clients.map(client => ({
+    label: `${client.name} — ${client.taxId}`,
+    value: client.id,
+  })),
 );
+
 const state = ref<NewInvoiceData>({
   client: {
     clientId: 0,
@@ -41,6 +46,19 @@ const state = ref<NewInvoiceData>({
     amount: 0,
   },
 });
+
+const selectedClientId = ref<number | undefined>(undefined);
+
+watch(selectedClientId, (id) => {
+  const client = clientsStore.clients.find(c => c.id === id);
+  if (!client)
+    return;
+  state.value.client.clientId = client.id;
+  state.value.client.taxId = client.taxId;
+  state.value.client.businessName = client.businessName;
+  state.value.client.postalCode = client.postalCode;
+  state.value.client.taxRegimeId = client.taxRegimeId;
+});
 </script>
 
 <template>
@@ -64,7 +82,7 @@ const state = ref<NewInvoiceData>({
           class="flex flex-col gap-4"
         >
           <SkeletonFormCard
-            v-if="pending"
+            v-if="clientsStore.isLoading"
             :field-count="1"
           />
           <UFormField
@@ -74,8 +92,9 @@ const state = ref<NewInvoiceData>({
             required
           >
             <USelect
-              v-model="state.client.clientId"
+              v-model="selectedClientId"
               :items="clientList"
+              placeholder="Select a client..."
             />
           </UFormField>
           <UFormField
@@ -84,6 +103,7 @@ const state = ref<NewInvoiceData>({
             required
           >
             <UInput
+              v-model.number="state.client.taxRegimeId"
               disabled
               class="w-full"
             />
@@ -94,6 +114,7 @@ const state = ref<NewInvoiceData>({
             required
           >
             <UInput
+              v-model="state.client.taxId"
               class="w-full"
               disabled
             />
@@ -104,6 +125,7 @@ const state = ref<NewInvoiceData>({
             required
           >
             <UInput
+              v-model="state.client.businessName"
               class="w-full"
               disabled
             />
@@ -114,6 +136,7 @@ const state = ref<NewInvoiceData>({
             required
           >
             <UInput
+              v-model="state.client.postalCode"
               class="w-full"
               disabled
             />

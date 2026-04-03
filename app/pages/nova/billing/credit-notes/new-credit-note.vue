@@ -9,13 +9,17 @@ definePageMeta({
   name: 'nova-billing-credit-notes-new-credit-note',
 });
 
-const { data: clients, pending } = useAsyncData('clients-list', () => useBilling().client.getAllClients(), { lazy: true });
+const clientsStore = useClientsStore();
+
+if (!clientsStore.clients.length) {
+  await clientsStore.fetchClients();
+}
 
 const clientList = computed(() =>
-  clients.value?.payload?.map((client, i) => ({
-    label: `client number ${i}`,
-    value: i,
-  })) ?? [],
+  clientsStore.clients.map(client => ({
+    label: `${client.name} — ${client.taxId}`,
+    value: client.id,
+  })),
 );
 
 const state = ref<NewCreditNoteData>({
@@ -48,6 +52,19 @@ function handleTaxableChange() {
     productServiceData.value.withholdingType = undefined;
   }
 }
+
+const selectedClientId = ref<number | undefined>(undefined);
+
+watch(selectedClientId, (id) => {
+  const client = clientsStore.clients.find(c => c.id === id);
+  if (!client)
+    return;
+  state.value.client.clientId = client.id;
+  state.value.client.taxId = client.taxId;
+  state.value.client.businessName = client.businessName;
+  state.value.client.postalCode = client.postalCode;
+  state.value.client.taxRegimeId = client.taxRegimeId;
+});
 </script>
 
 <template>
@@ -71,7 +88,7 @@ function handleTaxableChange() {
           class="flex flex-col gap-4"
         >
           <SkeletonFormCard
-            v-if="pending"
+            v-if="clientsStore.isLoading"
             :field-count="1"
           />
           <UFormField
@@ -81,8 +98,9 @@ function handleTaxableChange() {
             required
           >
             <USelect
-              v-model="state.client.clientId"
+              v-model="selectedClientId"
               :items="clientList"
+              placeholder="Select a client..."
             />
           </UFormField>
           <UFormField
@@ -91,6 +109,7 @@ function handleTaxableChange() {
             required
           >
             <UInput
+              v-model.number="state.client.taxRegimeId"
               disabled
               class="w-full"
             />
@@ -101,6 +120,7 @@ function handleTaxableChange() {
             required
           >
             <UInput
+              v-model="state.client.taxId"
               class="w-full"
               disabled
             />
@@ -111,6 +131,7 @@ function handleTaxableChange() {
             required
           >
             <UInput
+              v-model="state.client.businessName"
               class="w-full"
               disabled
             />
@@ -121,6 +142,7 @@ function handleTaxableChange() {
             required
           >
             <UInput
+              v-model="state.client.postalCode"
               class="w-full"
               disabled
             />
