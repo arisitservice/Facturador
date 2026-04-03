@@ -12,7 +12,7 @@ definePageMeta({
 const { data: clients, pending } = useAsyncData('clients-list', () => useBilling().client.getAllClients(), { lazy: true });
 
 const clientList = computed(() =>
-  clients.value?.data?.map((client, i) => ({
+  clients.value?.payload?.map((client, i) => ({
     label: `client number ${i}`,
     value: i,
   })) ?? [],
