@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui';
-
-import type { CreditNoteProductService, NewCreditNoteData } from '~/lib/schemas/billing';
-
-import { paymentForms, paymentMethods } from '~/lib/conts';
-import { clientDataSchema, creditNoteProductServiceSchema, creditNoteTaxInfoSchema, newCreditNoteDataSchema } from '~/lib/schemas/billing';
-
-const UButton = resolveComponent('UButton');
+import { newCreditNoteDataSchema } from '~/lib/schemas/billing';
 
 definePageMeta({
   name: 'nova-billing-credit-notes-new-credit-note',
@@ -14,364 +7,30 @@ definePageMeta({
 
 const clientsStore = useClientsStore();
 
-if (!clientsStore.clients.length) {
-  await clientsStore.fetchClients();
-}
-
-const clientList = computed(() =>
-  clientsStore.clients.map(client => ({
-    label: `${client.name} — ${client.taxId}`,
-    value: client.id,
-  })),
-);
-
-const state = ref<NewCreditNoteData>({
-  client: {
-    clientId: 0,
-    businessName: '',
-    postalCode: '',
-    taxId: '',
-    taxRegimeId: 0,
-  },
-  taxInfo: {
-    invoiceUsageId: 0,
-    paymentCurrencyId: 0,
-    paymentMethod: '',
-    paymentForm: '',
-  },
-  productServices: [],
+await useAsyncData('credit-note-clients', () => clientsStore.fetchClients(), {
+  immediate: !clientsStore.clients.length,
 });
 
-const productServiceData = ref<CreditNoteProductService>({
-  detailedDescription: '',
-  quantity: 0,
-  unitPrice: 0,
-  isTaxable: false,
-  withholdingType: undefined,
-});
-
-function handleTaxableChange() {
-  if (!productServiceData.value.isTaxable) {
-    productServiceData.value.withholdingType = undefined;
-  }
-}
-
-const selectedClientId = ref<number | undefined>(undefined);
-
-watch(selectedClientId, (id) => {
-  const client = clientsStore.clients.find(c => c.id === id);
-  if (!client)
-    return;
-  state.value.client.clientId = client.id;
-  state.value.client.taxId = client.taxId;
-  state.value.client.businessName = client.businessName;
-  state.value.client.postalCode = client.postalCode;
-  state.value.client.taxRegimeId = client.taxRegimeId;
-});
-
-const productServiceColumns: TableColumn<CreditNoteProductService>[] = [
-  { accessorKey: 'detailedDescription', header: 'Description' },
-  { accessorKey: 'quantity', header: 'Qty' },
-  { accessorKey: 'unitPrice', header: 'Unit Price' },
-  { accessorKey: 'isTaxable', header: 'Taxable' },
-  { accessorKey: 'withholdingType', header: 'Withholding' },
-  {
-    id: 'actions',
-    header: '',
-    cell: ({ row }) =>
-      h('div', { class: 'flex gap-1 justify-end' }, [
-        h(UButton, {
-          icon: 'i-lucide-pencil',
-          variant: 'ghost',
-          size: 'xs',
-          onClick: () => openEditModal(row.index),
-        }),
-        h(UButton, {
-          icon: 'i-lucide-trash',
-          variant: 'ghost',
-          color: 'error',
-          size: 'xs',
-          onClick: () => deleteProductService(row.index),
-        }),
-      ]),
-  },
-];
-
-function resetProductServiceData() {
-  productServiceData.value = {
-    detailedDescription: '',
-    quantity: 0,
-    unitPrice: 0,
-    isTaxable: false,
-    withholdingType: undefined,
-  };
-}
-
-const isProductModalOpen = ref(false);
-const editingIndex = ref<number | null>(null);
-
-function openAddModal() {
-  resetProductServiceData();
-  editingIndex.value = null;
-  isProductModalOpen.value = true;
-}
-
-function openEditModal(index: number) {
-  productServiceData.value = { ...state.value.productServices[index]! };
-  editingIndex.value = index;
-  isProductModalOpen.value = true;
-}
-
-function deleteProductService(index: number) {
-  state.value.productServices.splice(index, 1);
-}
-
-function saveProductService() {
-  if (editingIndex.value !== null) {
-    state.value.productServices[editingIndex.value] = { ...productServiceData.value };
-  }
-  else {
-    state.value.productServices.push({ ...productServiceData.value });
-  }
-  resetProductServiceData();
-  isProductModalOpen.value = false;
-}
-
-function submitCreditNote() {
-  // TODO: validate and call API — replace log with actual request
-  console.log('Submitting credit note:', JSON.stringify(state.value, null, 2));
-}
+const { state, selectedClientId, clientList, submitCreditNote } = useNewCreditNote();
 </script>
 
 <template>
   <div class="flex flex-col gap-8">
-    <!-- Client + Tax Info -->
     <UForm
       :schema="newCreditNoteDataSchema"
       :state="state"
     >
       <div class="flex flex-col sm:flex-row gap-4">
-        <!-- Client Data Form -->
-        <UCard class="w-full">
-          <template #header>
-            <h2 class="text-xl lg:text-2xl font-bold">
-              Client Information
-            </h2>
-          </template>
-          <UForm
-            nested
-            name="client"
-            :schema="clientDataSchema"
-            class="flex flex-col gap-4"
-          >
-            <SkeletonFormCard
-              v-if="clientsStore.isLoading"
-              :field-count="1"
-            />
-            <UFormField
-              v-else
-              label="Client"
-              name="clientId"
-              required
-            >
-              <USelect
-                v-model="selectedClientId"
-                :items="clientList"
-                placeholder="Select a client..."
-              />
-            </UFormField>
-            <UFormField
-              label="Tax Regime"
-              name="taxRegimeId"
-              required
-            >
-              <UInput
-                v-model.number="state.client.taxRegimeId"
-                disabled
-                class="w-full"
-              />
-            </UFormField>
-            <UFormField
-              label="Tax ID"
-              name="taxId"
-              required
-            >
-              <UInput
-                v-model="state.client.taxId"
-                class="w-full"
-                disabled
-              />
-            </UFormField>
-            <UFormField
-              label="Business Name"
-              name="businessName"
-              required
-            >
-              <UInput
-                v-model="state.client.businessName"
-                class="w-full"
-                disabled
-              />
-            </UFormField>
-            <UFormField
-              label="Postal Code"
-              name="postalCode"
-              required
-            >
-              <UInput
-                v-model="state.client.postalCode"
-                class="w-full"
-                disabled
-              />
-            </UFormField>
-          </UForm>
-          <!-- End Client Data Form -->
-        </UCard>
-
-        <!-- Tax Info Form -->
-        <UCard class="w-full">
-          <template #header>
-            <h2 class="text-xl lg:text-2xl font-bold">
-              Tax Information
-            </h2>
-          </template>
-          <UForm
-            nested
-            name="taxInfo"
-            :schema="creditNoteTaxInfoSchema"
-            class="flex flex-col gap-4"
-          >
-            <UFormField
-              label="Invoice Usage"
-              name="invoiceUsageId"
-            >
-              <UInput
-                v-model.number="state.taxInfo.invoiceUsageId"
-                class="w-full"
-              />
-            </UFormField>
-            <UFormField
-              label="Payment Method"
-              name="paymentMethod"
-              required
-            >
-              <USelect v-model="state.taxInfo.paymentMethod" :items="paymentMethods" />
-            </UFormField>
-            <UFormField
-              label="Payment Form"
-              name="paymentForm"
-              required
-            >
-              <USelect v-model="state.taxInfo.paymentForm" :items="paymentForms" />
-            </UFormField>
-            <UFormField
-              label="Payment Currency"
-              name="paymentCurrencyId"
-              required
-            >
-              <UInput
-                v-model.number="state.taxInfo.paymentCurrencyId"
-                class="w-full"
-              />
-            </UFormField>
-          </UForm>
-        </UCard>
-      <!-- End Tax Info Form -->
+        <BillingClientInfoCard
+          v-model:selected-client-id="selectedClientId"
+          :items="clientList"
+          :is-loading="clientsStore.isLoading"
+          :client-data="state.client"
+        />
+        <BillingCreditNoteTaxInfoCard v-model:tax-info="state.taxInfo" />
       </div>
     </UForm>
-
-    <!-- Product/Service modal -->
-    <UModal
-      v-model:open="isProductModalOpen"
-      :title="editingIndex !== null ? 'Edit Product / Service' : 'Add Product / Service'"
-      description="Fill in the details and click Save to apply the changes."
-    >
-      <template #body>
-        <UForm
-          :schema="creditNoteProductServiceSchema"
-          :state="productServiceData"
-          class="flex flex-col gap-4"
-          @submit="saveProductService"
-        >
-          <UFormField
-            label="Detailed Description"
-            name="detailedDescription"
-            required
-          >
-            <UInput v-model="productServiceData.detailedDescription" class="w-full" />
-          </UFormField>
-          <UFormField
-            label="Quantity"
-            name="quantity"
-            required
-          >
-            <UInput
-              v-model.number="productServiceData.quantity"
-              type="number"
-              class="w-full"
-            />
-          </UFormField>
-          <UFormField
-            label="Unit Price"
-            name="unitPrice"
-            required
-          >
-            <UInput
-              v-model.number="productServiceData.unitPrice"
-              type="number"
-              class="w-full"
-            />
-          </UFormField>
-          <div class="flex w-full flex-col md:flex-row gap-4 min-h-16">
-            <UFormField
-              label="Is Taxable"
-              name="isTaxable"
-            >
-              <USwitch v-model="productServiceData.isTaxable" @change="handleTaxableChange" />
-            </UFormField>
-            <UFormField
-              v-if="productServiceData.isTaxable"
-              label="Withholding Type"
-              name="withholdingType"
-            >
-              <USelect
-                v-model="productServiceData.withholdingType"
-                :items="[{ label: 'VAT', value: 'vat' }, { label: 'Income Tax', value: 'incomeTax' }]"
-                class="min-w-12"
-              />
-            </UFormField>
-          </div>
-          <div class="flex justify-end gap-2">
-            <UButton
-              label="Cancel"
-              color="neutral"
-              variant="ghost"
-              type="button"
-              @click="isProductModalOpen = false"
-            />
-            <UButton
-              :label="editingIndex !== null ? 'Save' : 'Add'"
-              type="submit"
-              icon="i-lucide-check"
-            />
-          </div>
-        </UForm>
-      </template>
-    </UModal>
-
-    <div class="flex justify-between items-center">
-      <UButton
-        label="Add Product / Service"
-        icon="i-lucide-plus"
-        variant="outline"
-        @click="openAddModal"
-      />
-    </div>
-    <UTable
-      :data="state.productServices"
-      :columns="productServiceColumns"
-      class="flex-1"
-    />
+    <BillingCreditNoteProductServicesTable v-model="state.productServices" />
     <div class="flex justify-end">
       <UButton
         label="Create Credit Note"
@@ -383,7 +42,3 @@ function submitCreditNote() {
     </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>
