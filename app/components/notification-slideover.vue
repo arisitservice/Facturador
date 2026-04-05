@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatTimeAgo } from '@vueuse/core';
 
-import type { Notification } from '~/types/facturador';
+import type { Notification } from '~/types/facturador/dashboard';
 
 const { isNotificationsSlideoverOpen } = useDashboard();
 

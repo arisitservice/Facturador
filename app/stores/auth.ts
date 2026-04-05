@@ -1,17 +1,22 @@
 import { StorageSerializers } from '@vueuse/core';
 import { skipHydrate } from 'pinia';
 
-import type { LoginResponse, LoginUser, Payload, SignUpPayload, SignUpResponse } from '~/types/facturador';
+import type { ApiResponse } from '~/types/facturador/api';
+import type { Owner, Tenant, User } from '~/types/facturador/api/auth-api';
 
 const PAYLOAD_KEY = 'aris_ti_nova_payload';
 const TOKEN_KEY = 'aris_ti_nova_auth_token';
 const TOKEN_TYPE_KEY = 'aris_ti_nova_auth_token_type';
 const USER_KEY = 'aris_ti_nova_auth_user';
 
+function emptyError(message: string): ApiResponse<never> {
+  return { payload: null, isSuccess: false, message, statusCode: 0, errors: null };
+}
+
 export const useAuthStore = defineStore('useAuthStore', () => {
   // skipHydrate prevents Nuxt SSR payload from overwriting localStorage values on page refresh
-  const payload = skipHydrate(useLocalStorage<Payload | null>(PAYLOAD_KEY, null, { serializer: StorageSerializers.object }));
-  const session = skipHydrate(useLocalStorage<LoginUser | null>(USER_KEY, null, { serializer: StorageSerializers.object }));
+  const tenant = skipHydrate(useLocalStorage<Tenant | null>(PAYLOAD_KEY, null, { serializer: StorageSerializers.object }));
+  const session = skipHydrate(useLocalStorage<User | null>(USER_KEY, null, { serializer: StorageSerializers.object }));
   const token = skipHydrate(useLocalStorage<string | null>(TOKEN_KEY, null));
   const tokenType = skipHydrate(useLocalStorage<string | null>(TOKEN_TYPE_KEY, null));
   const isLoading = ref(false);
@@ -19,11 +24,11 @@ export const useAuthStore = defineStore('useAuthStore', () => {
   const isAuthenticated = computed(() => !!session.value && !!token.value);
   const user = computed(() => session.value || null);
 
-  function savePayload(newPayload: Payload) {
-    payload.value = newPayload;
+  function saveTenant(newPayload: Tenant) {
+    tenant.value = newPayload;
   }
 
-  function saveSession(authToken: string, authTokenType: string, authUser: LoginUser) {
+  function saveSession(authToken: string, authTokenType: string, authUser: User) {
     token.value = authToken;
     tokenType.value = authTokenType;
     session.value = authUser;
@@ -46,7 +51,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
   async function signIn({ email, password }: { email: string; password: string }) {
     isLoading.value = true;
     try {
-      const response = await useApiFetch<LoginResponse>('/Tenant/v1/Auth/Login', {
+      const response = await useApiFetch<ApiResponse<User>>('/Tenant/v1/Auth/Login', {
         method: 'POST',
         headers: {
           // Test only id for aaaa@aaaa.com user
@@ -62,41 +67,29 @@ export const useAuthStore = defineStore('useAuthStore', () => {
       return response;
     }
     catch {
-      return {
-        payload: null,
-        isSuccess: false,
-        message: 'An error occurred during sign in. Please try again.',
-        statusCode: 0,
-        errors: [],
-      } satisfies LoginResponse;
+      return emptyError('An error occurred during sign in. Please try again.');
     }
     finally {
       isLoading.value = false;
     }
   }
 
-  async function signUp(payload: SignUpPayload) {
+  async function signUp(payload: { tenant: Pick<Tenant, 'name' | 'company'>; owner: Pick<Owner, 'username' | 'email' & { password: string }> }) {
     isLoading.value = true;
     try {
-      const response = await useApiFetch<SignUpResponse>('/main/Tenants/Create', {
+      const response = await useApiFetch<ApiResponse<Tenant>>('/main/Tenants/Create', {
         method: 'POST',
         body: payload,
       });
 
       if (response.isSuccess && response.payload) {
-        savePayload(response.payload);
+        saveTenant(response.payload);
       }
 
       return response;
     }
     catch {
-      return {
-        payload: null,
-        isSuccess: false,
-        message: 'An error occurred during sign up. Please try again.',
-        statusCode: 0,
-        errors: [],
-      } satisfies SignUpResponse;
+      return emptyError('An error occurred during sign up. Please try again.');
     }
     finally {
       isLoading.value = false;
@@ -105,7 +98,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
 
   async function signOut() {
     clearSession();
-    payload.value = null;
+    tenant.value = null;
   }
 
   return {
@@ -115,7 +108,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
     user,
     token,
     tokenType,
-    payload,
+    tenant,
     signIn,
     signUp,
     signOut,

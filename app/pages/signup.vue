@@ -4,7 +4,7 @@ import type { output } from 'zod';
 
 import { email, object, string } from 'zod';
 
-import type { SignUpPayload } from '~/types/facturador';
+import type { ApiError } from '~/types/facturador/api';
 
 definePageMeta({
   layout: 'login',
@@ -15,7 +15,7 @@ const authStore = useAuthStore();
 const { signUp } = authStore;
 const { isLoading, isAuthenticated } = storeToRefs(authStore);
 const toast = useToast();
-const apiErrors = ref<string[]>([]);
+const apiErrors = ref<ApiError[]>();
 
 onMounted(() => {
   if (isAuthenticated.value) {
@@ -47,19 +47,16 @@ const schema = object({
 type Schema = output<typeof schema>;
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  apiErrors.value = [];
   try {
     const { tenantName, company, username, email, password } = event.data;
-    const payload: SignUpPayload = {
+    const payload = {
       tenant: { name: tenantName, company },
       owner: { username, email, password },
     };
     const response = await signUp(payload);
 
-    if (!response.isSuccess) {
-      apiErrors.value = response.errors.length
-        ? response.errors.map(e => e.errorMessage)
-        : [response.message];
+    if (!response.isSuccess && response.errors) {
+      apiErrors.value = response.errors;
       return;
     }
 
@@ -71,7 +68,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     navigateTo({ name: 'login' });
   }
   catch {
-    apiErrors.value = ['An unexpected error occurred. Please try again.'];
+    apiErrors.value?.push({ property: 'unknown', errorMessage: 'An unexpected error occurred. Please try again.' });
   }
 }
 </script>
@@ -97,7 +94,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     <template #validation>
       <UAlert
-        v-if="apiErrors.length"
+        v-if="apiErrors?.length"
         color="error"
         icon="i-lucide-info"
         title="Please fix the following errors:"
@@ -105,10 +102,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         <template #description>
           <ul class="list-disc pl-4 mt-1 space-y-0.5">
             <li
-              v-for="msg in apiErrors"
-              :key="msg"
+              v-for="error in apiErrors"
+              :key="error.errorMessage"
             >
-              {{ msg }}
+              {{ error.errorMessage }}
             </li>
           </ul>
         </template>

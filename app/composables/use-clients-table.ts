@@ -1,13 +1,11 @@
 import type { TableColumn } from '@nuxt/ui';
 import type { Row } from '@tanstack/table-core';
 
-import type { User } from '~/types/facturador';
+import type { User } from '~/types/facturador/api/auth-api';
 
 // TODO - Check why is not rendering components when using the useComponents composable
 
 export function useClientsTable() {
-  const UAvatar = resolveComponent('UAvatar');
-  const UBadge = resolveComponent('UBadge');
   const UButton = resolveComponent('UButton');
   const UCheckbox = resolveComponent('UCheckbox');
   const UDropdownMenu = resolveComponent('UDropdownMenu');
@@ -86,13 +84,9 @@ export function useClientsTable() {
       header: 'Name',
       cell: ({ row }) => {
         return h('div', { class: 'flex items-center gap-3' }, [
-          h(UAvatar, {
-            ...row.original.avatar,
-            size: 'lg',
-          }),
           h('div', undefined, [
-            h('p', { class: 'font-medium text-highlighted' }, row.original.name),
-            h('p', { class: '' }, `@${row.original.name}`),
+            h('p', { class: 'font-medium text-highlighted' }, row.original.username),
+            h('p', { class: '' }, `@${row.original.username}`),
           ]),
         ]);
       },
@@ -114,26 +108,6 @@ export function useClientsTable() {
           class: '-mx-2.5',
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
         });
-      },
-    },
-    {
-      accessorKey: 'location',
-      header: 'Location',
-      cell: ({ row }) => row.original.location,
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      filterFn: 'equals',
-      cell: ({ row }) => {
-        const color = {
-          subscribed: 'success' as const,
-          unsubscribed: 'error' as const,
-          bounced: 'warning' as const,
-        }[row.original.status];
-
-        return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-          row.original.status);
       },
     },
     {

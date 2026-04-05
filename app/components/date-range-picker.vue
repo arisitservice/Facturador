@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CalendarDate, DateFormatter, getLocalTimeZone, today } from '@internationalized/date';
 
-import type { Range } from '~/types/facturador';
+import type { Range } from '~/types/facturador/dashboard';
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'medium',

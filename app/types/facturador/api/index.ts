@@ -3,5 +3,10 @@ export type ApiResponse<T> = {
   isSuccess: boolean;
   message: string | null;
   statusCode: number;
-  errors: { property: string; errorMessage: string }[] | null;
+  errors: ApiError[] | null;
+};
+
+export type ApiError = {
+  property: string;
+  errorMessage: string;
 };
