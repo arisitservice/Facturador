@@ -6,6 +6,7 @@ import type { ClientData } from '~/lib/schemas/billing';
 import { clientDataSchema } from '~/lib/schemas/billing';
 
 const props = defineProps<{
+  title?: string;
   items: SelectItem[];
   isLoading: boolean;
   clientData: ClientData;
@@ -18,7 +19,7 @@ const selectedClientId = defineModel<number | undefined>('selectedClientId');
   <UCard class="w-full">
     <template #header>
       <h2 class="text-xl lg:text-2xl font-bold">
-        Client Information
+        {{ props.title || 'Receiver Information' }}
       </h2>
     </template>
     <UForm

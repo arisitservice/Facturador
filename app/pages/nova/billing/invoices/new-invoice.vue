@@ -11,7 +11,7 @@ await useAsyncData('invoice-clients', () => clientsStore.fetchClients(), {
   immediate: !clientsStore.clients.length,
 });
 
-const { state, selectedClientId, clientList, submitInvoice } = useNewInvoice();
+const { state, selectedReceiverId, selectedIssuerId, clientList, submitInvoice } = useNewInvoice();
 </script>
 
 <template>
@@ -22,10 +22,19 @@ const { state, selectedClientId, clientList, submitInvoice } = useNewInvoice();
     >
       <div class="flex flex-col sm:flex-row gap-4">
         <BillingClientInfoCard
-          v-model:selected-client-id="selectedClientId"
+          v-model:selected-client-id="selectedIssuerId"
+          title="Issuer Information"
           :items="clientList"
           :is-loading="clientsStore.isLoading"
-          :client-data="state.client"
+          :client-data="state.issuer"
+        />
+
+        <BillingClientInfoCard
+          v-model:selected-client-id="selectedReceiverId"
+          title="Receiver Information"
+          :items="clientList"
+          :is-loading="clientsStore.isLoading"
+          :client-data="state.receiver"
         />
         <BillingInvoiceTaxInfoCard
           v-model:tax-info="state.taxInfo"

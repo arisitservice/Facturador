@@ -1,12 +1,7 @@
 export type Client = {
   id: number;
   name: string;
-  businessName: string;
-  taxId: string;
-  taxRegimeId: number;
-  taxAddress: string;
-  postalCode: string;
-};
+} & BusinessInfo;
 
 export type CreateClientPayload = Omit<Client, 'id'>;
 
@@ -18,3 +13,16 @@ export type TaxRegimen = {
   description: string;
   status: string;
 };
+
+export type BusinessInfo = {
+  id: number;
+  businessName: string;
+  taxId: string;
+  taxRegimeId: number;
+  taxAddress: string;
+  postalCode: string;
+};
+
+export type CreateBusinessInfoPayload = Omit<BusinessInfo, 'id'>;
+
+export type UpdateBusinessInfoPayload = Partial<CreateBusinessInfoPayload>;

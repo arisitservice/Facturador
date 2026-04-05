@@ -11,7 +11,14 @@ export function useNewInvoice() {
   );
 
   const state = reactive<NewInvoiceData>({
-    client: {
+    issuer: {
+      clientId: 0,
+      businessName: '',
+      postalCode: '',
+      taxId: '',
+      taxRegimeId: 0,
+    },
+    receiver: {
       clientId: 0,
       businessName: '',
       postalCode: '',
@@ -35,22 +42,34 @@ export function useNewInvoice() {
     },
   });
 
-  const selectedClientId = shallowRef<number | undefined>(undefined);
+  const selectedReceiverId = shallowRef<number | undefined>(undefined);
+  const selectedIssuerId = shallowRef<number | undefined>(undefined);
 
-  watch(selectedClientId, (id) => {
+  watch(selectedReceiverId, (id) => {
     const client = clientsStore.clients.find(c => c.id === id);
     if (!client)
       return;
-    state.client.clientId = client.id;
-    state.client.taxId = client.taxId;
-    state.client.businessName = client.businessName;
-    state.client.postalCode = client.postalCode;
-    state.client.taxRegimeId = client.taxRegimeId;
+    state.receiver.clientId = client.id;
+    state.receiver.taxId = client.taxId;
+    state.receiver.businessName = client.businessName;
+    state.receiver.postalCode = client.postalCode;
+    state.receiver.taxRegimeId = client.taxRegimeId;
+  });
+
+  watch(selectedIssuerId, (id) => {
+    const client = clientsStore.clients.find(c => c.id === id);
+    if (!client)
+      return;
+    state.issuer.clientId = client.id;
+    state.issuer.taxId = client.taxId;
+    state.issuer.businessName = client.businessName;
+    state.issuer.postalCode = client.postalCode;
+    state.issuer.taxRegimeId = client.taxRegimeId;
   });
 
   function submitInvoice() {
     // TODO: validate and call API
   }
 
-  return { state, selectedClientId, clientList, submitInvoice };
+  return { state, selectedReceiverId, selectedIssuerId, clientList, submitInvoice };
 }

@@ -42,7 +42,8 @@ export type VatDetails = { // VAT = Value Added Tax - Impuesto al Valor Agregado
 };
 
 export const newInvoiceDataSchema = object({
-  client: clientDataSchema,
+  issuer: clientDataSchema,
+  receiver: clientDataSchema,
   taxInfo: invoiceTaxInfoSchema,
   productServices: array(productServiceSchema),
   vatDetails: object({
