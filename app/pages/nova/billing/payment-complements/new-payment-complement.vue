@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { NewPaymentComplementData } from '~/lib/schemas/billing';
 
-import { dummyTableData } from '~/assets/data/tables/dummy';
 import { paymentForms, paymentMethods } from '~/lib/conts';
 import { clientDataSchema, newPaymentComplementDataSchema, paymentReceptionSchema } from '~/lib/schemas/billing';
 
@@ -66,6 +65,11 @@ watch(selectedClientId, (id) => {
   state.value.client.postalCode = client.postalCode;
   state.value.client.taxRegimeId = client.taxRegimeId;
 });
+
+function submitPaymentComplement() {
+  // TODO: validate and call API — replace log with actual request
+  console.log('Submitting payment complement:', JSON.stringify(state.value, null, 2));
+}
 </script>
 
 <template>
@@ -202,7 +206,7 @@ watch(selectedClientId, (id) => {
             required
           >
             <UInput
-              v-model="state.paymentReception.amount"
+              v-model.number="state.paymentReception.amount"
               type="number"
               class="w-full"
             />
@@ -262,7 +266,15 @@ watch(selectedClientId, (id) => {
       </UCard>
       <!-- End Payment Reception Form -->
     </div>
-    <UTable :data="dummyTableData" class="flex-1" />
+    <div class="flex justify-end">
+      <UButton
+        label="Create Payment Complement"
+        type="button"
+        icon="i-lucide-file-plus"
+        size="lg"
+        @click="submitPaymentComplement"
+      />
+    </div>
   </UForm>
 </template>
 
