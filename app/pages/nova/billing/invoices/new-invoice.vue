@@ -21,7 +21,7 @@ const { state, selectedClientId, clientList, submitInvoice } = useNewInvoice();
       :state="state"
     >
       <div class="flex flex-col sm:flex-row gap-4">
-        <BillingInvoiceClientInfoCard
+        <BillingClientInfoCard
           v-model:selected-client-id="selectedClientId"
           :items="clientList"
           :is-loading="clientsStore.isLoading"
