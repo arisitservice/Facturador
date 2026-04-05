@@ -22,6 +22,7 @@ const showForm = computed<FormType>(() => {
   <USlideover
     v-model:open="isAddNewRecordSlideoverOpen"
     :title="`Add new ${showForm}`"
+    :description="`Fill in the form to add a new ${showForm} to the catalog.`"
   >
     <template #body>
       <div>
