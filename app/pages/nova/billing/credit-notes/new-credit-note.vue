@@ -6,6 +6,8 @@ import type { CreditNoteProductService, NewCreditNoteData } from '~/lib/schemas/
 import { paymentForms, paymentMethods } from '~/lib/conts';
 import { clientDataSchema, creditNoteProductServiceSchema, creditNoteTaxInfoSchema, newCreditNoteDataSchema } from '~/lib/schemas/billing';
 
+const UButton = resolveComponent('UButton');
+
 definePageMeta({
   name: 'nova-billing-credit-notes-new-credit-note',
 });
@@ -73,6 +75,26 @@ const productServiceColumns: TableColumn<CreditNoteProductService>[] = [
   { accessorKey: 'unitPrice', header: 'Unit Price' },
   { accessorKey: 'isTaxable', header: 'Taxable' },
   { accessorKey: 'withholdingType', header: 'Withholding' },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) =>
+      h('div', { class: 'flex gap-1 justify-end' }, [
+        h(UButton, {
+          icon: 'i-lucide-pencil',
+          variant: 'ghost',
+          size: 'xs',
+          onClick: () => openEditModal(row.index),
+        }),
+        h(UButton, {
+          icon: 'i-lucide-trash',
+          variant: 'ghost',
+          color: 'error',
+          size: 'xs',
+          onClick: () => deleteProductService(row.index),
+        }),
+      ]),
+  },
 ];
 
 function resetProductServiceData() {
@@ -86,9 +108,31 @@ function resetProductServiceData() {
 }
 
 const isProductModalOpen = ref(false);
+const editingIndex = ref<number | null>(null);
 
-function addProductService() {
-  state.value.productServices.push({ ...productServiceData.value });
+function openAddModal() {
+  resetProductServiceData();
+  editingIndex.value = null;
+  isProductModalOpen.value = true;
+}
+
+function openEditModal(index: number) {
+  productServiceData.value = { ...state.value.productServices[index]! };
+  editingIndex.value = index;
+  isProductModalOpen.value = true;
+}
+
+function deleteProductService(index: number) {
+  state.value.productServices.splice(index, 1);
+}
+
+function saveProductService() {
+  if (editingIndex.value !== null) {
+    state.value.productServices[editingIndex.value] = { ...productServiceData.value };
+  }
+  else {
+    state.value.productServices.push({ ...productServiceData.value });
+  }
   resetProductServiceData();
   isProductModalOpen.value = false;
 }
@@ -239,15 +283,15 @@ function submitCreditNote() {
     <!-- Product/Service modal -->
     <UModal
       v-model:open="isProductModalOpen"
-      title="Add Product / Service"
-      description="Fill in the details and click Add to append the item to the credit note."
+      :title="editingIndex !== null ? 'Edit Product / Service' : 'Add Product / Service'"
+      description="Fill in the details and click Save to apply the changes."
     >
       <template #body>
         <UForm
           :schema="creditNoteProductServiceSchema"
           :state="productServiceData"
           class="flex flex-col gap-4"
-          @submit="addProductService"
+          @submit="saveProductService"
         >
           <UFormField
             label="Detailed Description"
@@ -306,9 +350,9 @@ function submitCreditNote() {
               @click="isProductModalOpen = false"
             />
             <UButton
-              label="Add"
+              :label="editingIndex !== null ? 'Save' : 'Add'"
               type="submit"
-              icon="i-lucide-plus"
+              icon="i-lucide-check"
             />
           </div>
         </UForm>
@@ -320,7 +364,7 @@ function submitCreditNote() {
         label="Add Product / Service"
         icon="i-lucide-plus"
         variant="outline"
-        @click="isProductModalOpen = true"
+        @click="openAddModal"
       />
     </div>
     <UTable

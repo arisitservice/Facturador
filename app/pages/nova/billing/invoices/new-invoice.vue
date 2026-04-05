@@ -6,6 +6,8 @@ import type { NewInvoiceData, ProductService } from '~/lib/schemas/billing';
 import { paymentForms, paymentMethods } from '~/lib/conts';
 import { clientDataSchema, newInvoiceDataSchema, productServiceSchema } from '~/lib/schemas/billing';
 
+const UButton = resolveComponent('UButton');
+
 definePageMeta({
   name: 'nova-billing-invoices-new-invoice',
 });
@@ -75,6 +77,26 @@ const productServiceColumns: TableColumn<ProductService>[] = [
   { accessorKey: 'measureUnitId', header: 'Unit' },
   { accessorKey: 'quantity', header: 'Qty' },
   { accessorKey: 'unitPrice', header: 'Unit Price' },
+  {
+    id: 'actions',
+    header: '',
+    cell: ({ row }) =>
+      h('div', { class: 'flex gap-1 justify-end' }, [
+        h(UButton, {
+          icon: 'i-lucide-pencil',
+          variant: 'ghost',
+          size: 'xs',
+          onClick: () => openEditModal(row.index),
+        }),
+        h(UButton, {
+          icon: 'i-lucide-trash',
+          variant: 'ghost',
+          color: 'error',
+          size: 'xs',
+          onClick: () => deleteProductService(row.index),
+        }),
+      ]),
+  },
 ];
 
 function resetNewProductService() {
@@ -88,9 +110,31 @@ function resetNewProductService() {
 }
 
 const isProductModalOpen = ref(false);
+const editingIndex = ref<number | null>(null);
 
-function addProductService() {
-  state.value.productServices.push({ ...newProductService.value });
+function openAddModal() {
+  resetNewProductService();
+  editingIndex.value = null;
+  isProductModalOpen.value = true;
+}
+
+function openEditModal(index: number) {
+  newProductService.value = { ...state.value.productServices[index]! };
+  editingIndex.value = index;
+  isProductModalOpen.value = true;
+}
+
+function deleteProductService(index: number) {
+  state.value.productServices.splice(index, 1);
+}
+
+function saveProductService() {
+  if (editingIndex.value !== null) {
+    state.value.productServices[editingIndex.value] = { ...newProductService.value };
+  }
+  else {
+    state.value.productServices.push({ ...newProductService.value });
+  }
   resetNewProductService();
   isProductModalOpen.value = false;
 }
@@ -283,15 +327,15 @@ function submitInvoice() {
     <!-- Product/Service modal -->
     <UModal
       v-model:open="isProductModalOpen"
-      title="Add Product / Service"
-      description="Fill in the details and click Add to append the item to the invoice."
+      :title="editingIndex !== null ? 'Edit Product / Service' : 'Add Product / Service'"
+      description="Fill in the details and click Save to apply the changes."
     >
       <template #body>
         <UForm
           :schema="productServiceSchema"
           :state="newProductService"
           class="flex flex-col gap-4"
-          @submit="addProductService"
+          @submit="saveProductService"
         >
           <UFormField
             label="Detailed Description"
@@ -345,9 +389,9 @@ function submitInvoice() {
               @click="isProductModalOpen = false"
             />
             <UButton
-              label="Add"
+              :label="editingIndex !== null ? 'Save' : 'Add'"
               type="submit"
-              icon="i-lucide-plus"
+              icon="i-lucide-check"
             />
           </div>
         </UForm>
@@ -358,7 +402,7 @@ function submitInvoice() {
         label="Add Product / Service"
         icon="i-lucide-plus"
         variant="outline"
-        @click="isProductModalOpen = true"
+        @click="openAddModal"
       />
     </div>
     <UTable
