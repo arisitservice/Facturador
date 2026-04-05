@@ -10,7 +10,10 @@ const props = defineProps<{ client: Client }>();
 const emit = defineEmits<{ close: [] }>();
 
 const clientsStore = useClientsStore();
+const taxRegimeStore = useTaxRegimeStore();
 const toast = useToast();
+
+await taxRegimeStore.getTaxRegimes();
 
 const state = ref<NewClient>({
   name: props.client.name,
@@ -82,10 +85,12 @@ async function onSubmit(event: FormSubmitEvent<NewClient>) {
       name="taxRegimeId"
       required
     >
-      <UInput
-        v-model.number="state.taxRegimeId"
-        type="number"
-        placeholder="601"
+      <USelect
+        v-model="state.taxRegimeId"
+        :items="taxRegimeStore.taxRegimes"
+        value-key="id"
+        label-key="description"
+        description-key="satCode"
         class="w-full"
       />
     </UFormField>
