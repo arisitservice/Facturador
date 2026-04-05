@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { eachDayOfInterval } from 'date-fns';
 
-import type { Period, Range } from '~/types/facturador';
+import type { Period, Range } from '~/types/facturador/dashboard';
 
 const props = defineProps<{
   range: Range;

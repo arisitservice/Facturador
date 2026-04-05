@@ -7,7 +7,10 @@ import { newClientSchema } from '~/lib/schemas/catalogs';
 
 const { isAddNewRecordSlideoverOpen } = useDashboard();
 const clientsStore = useClientsStore();
+const taxRegimeStore = useTaxRegimeStore();
 const toast = useToast();
+
+await taxRegimeStore.getTaxRegimes();
 
 const state = ref<NewClient>({
   name: '',
@@ -79,10 +82,12 @@ async function onSubmit(event: FormSubmitEvent<NewClient>) {
       name="taxRegimeId"
       required
     >
-      <UInput
+      <USelect
         v-model.number="state.taxRegimeId"
-        type="number"
-        placeholder="601"
+        :items="taxRegimeStore.taxRegimes"
+        value-key="id"
+        label-key="description"
+        description-key="satCode"
         class="w-full"
       />
     </UFormField>
