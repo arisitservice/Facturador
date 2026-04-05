@@ -11,3 +11,10 @@ export type Client = {
 export type CreateClientPayload = Omit<Client, 'id'>;
 
 export type UpdateClientPayload = Partial<CreateClientPayload>;
+
+export type TaxRegimen = {
+  id: number;
+  satCode: number;
+  description: string;
+  status: string;
+};
