@@ -29,7 +29,9 @@ const columnFilters = ref([{
 const columnVisibility = ref();
 const rowSelection = ref({});
 
-await clientsStore.fetchClients();
+if (!clientsStore.clients.length) {
+  await clientsStore.fetchClients();
+}
 
 function openEdit(client: Client) {
   clientToEdit.value = client;
