@@ -71,6 +71,7 @@ export const creditNoteProductServiceSchema = productServiceSchema.omit({ produc
 export type CreditNoteProductService = infer_<typeof creditNoteProductServiceSchema>;
 
 export const newCreditNoteDataSchema = object({
+  issuer: clientDataSchema,
   client: clientDataSchema,
   taxInfo: creditNoteTaxInfoSchema,
   productServices: array(creditNoteProductServiceSchema),
@@ -91,6 +92,7 @@ export const paymentReceptionSchema = object({
 export type PaymentReception = infer_<typeof paymentReceptionSchema>;
 
 export const newPaymentComplementDataSchema = object({
+  issuer: clientDataSchema,
   client: clientDataSchema,
   paymentReception: paymentReceptionSchema,
 });

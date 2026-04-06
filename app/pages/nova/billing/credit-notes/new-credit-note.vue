@@ -6,12 +6,32 @@ definePageMeta({
 });
 
 const clientsStore = useClientsStore();
+const businessInfoStore = useBusinessInfoStore();
 
-await useAsyncData('credit-note-clients', () => clientsStore.fetchClients(), {
-  immediate: !clientsStore.clients.length,
-});
+await Promise.all([
+  useAsyncData('credit-note-clients', () => clientsStore.fetchClients(), {
+    immediate: !clientsStore.clients.length,
+  }),
+  useAsyncData('credit-note-business-info', () => businessInfoStore.fetchBusinessInfoList(), {
+    immediate: !businessInfoStore.businessInfoList.length,
+  }),
+]);
 
-const { state, selectedClientId, clientList, submitCreditNote } = useNewCreditNote();
+const {
+  state,
+  issuerMode,
+  selectedOwnId,
+  selectedIssuerClientId,
+  selectedIssuerClientBusinessInfoId,
+  issuerClientBusinessInfoItems,
+  isLoadingIssuerClientBusinessInfo,
+  selectedClientId,
+  selectedClientBusinessInfoId,
+  clientList,
+  clientBusinessInfoItems,
+  isLoadingClientBusinessInfo,
+  submitCreditNote,
+} = useNewCreditNote();
 </script>
 
 <template>
@@ -21,12 +41,28 @@ const { state, selectedClientId, clientList, submitCreditNote } = useNewCreditNo
       :state="state"
     >
       <div class="flex flex-col sm:flex-row gap-4">
+        <BillingIssuerInfoCard
+          v-model:issuer-mode="issuerMode"
+          v-model:selected-own-id="selectedOwnId"
+          v-model:selected-issuer-client-id="selectedIssuerClientId"
+          v-model:selected-issuer-client-business-info-id="selectedIssuerClientBusinessInfoId"
+          :client-list="clientList"
+          :is-loading-clients="clientsStore.isLoading"
+          :issuer-data="state.issuer"
+          :issuer-client-business-info-items="issuerClientBusinessInfoItems"
+          :is-loading-issuer-client-business-info="isLoadingIssuerClientBusinessInfo"
+        />
+
         <BillingClientInfoCard
           v-model:selected-client-id="selectedClientId"
+          v-model:selected-business-info-id="selectedClientBusinessInfoId"
           :items="clientList"
           :is-loading="clientsStore.isLoading"
           :client-data="state.client"
+          :business-info-items="clientBusinessInfoItems"
+          :is-loading-business-info="isLoadingClientBusinessInfo"
         />
+
         <BillingCreditNoteTaxInfoCard v-model:tax-info="state.taxInfo" />
       </div>
     </UForm>

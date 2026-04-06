@@ -6,12 +6,32 @@ definePageMeta({
 });
 
 const clientsStore = useClientsStore();
+const businessInfoStore = useBusinessInfoStore();
 
-await useAsyncData('invoice-clients', () => clientsStore.fetchClients(), {
-  immediate: !clientsStore.clients.length,
-});
+await Promise.all([
+  useAsyncData('invoice-clients', () => clientsStore.fetchClients(), {
+    immediate: !clientsStore.clients.length,
+  }),
+  useAsyncData('invoice-business-info', () => businessInfoStore.fetchBusinessInfoList(), {
+    immediate: !businessInfoStore.businessInfoList.length,
+  }),
+]);
 
-const { state, selectedReceiverId, selectedIssuerId, clientList, submitInvoice } = useNewInvoice();
+const {
+  state,
+  issuerMode,
+  selectedOwnId,
+  selectedIssuerClientId,
+  selectedIssuerClientBusinessInfoId,
+  issuerClientBusinessInfoItems,
+  isLoadingIssuerClientBusinessInfo,
+  selectedReceiverId,
+  selectedReceiverBusinessInfoId,
+  clientList,
+  receiverBusinessInfoItems,
+  isLoadingReceiverBusinessInfo,
+  submitInvoice,
+} = useNewInvoice();
 </script>
 
 <template>
@@ -21,21 +41,29 @@ const { state, selectedReceiverId, selectedIssuerId, clientList, submitInvoice }
       :state="state"
     >
       <div class="flex flex-col sm:flex-row gap-4">
-        <BillingClientInfoCard
-          v-model:selected-client-id="selectedIssuerId"
-          title="Issuer Information"
-          :items="clientList"
-          :is-loading="clientsStore.isLoading"
-          :client-data="state.issuer"
+        <BillingIssuerInfoCard
+          v-model:issuer-mode="issuerMode"
+          v-model:selected-own-id="selectedOwnId"
+          v-model:selected-issuer-client-id="selectedIssuerClientId"
+          v-model:selected-issuer-client-business-info-id="selectedIssuerClientBusinessInfoId"
+          :client-list="clientList"
+          :is-loading-clients="clientsStore.isLoading"
+          :issuer-data="state.issuer"
+          :issuer-client-business-info-items="issuerClientBusinessInfoItems"
+          :is-loading-issuer-client-business-info="isLoadingIssuerClientBusinessInfo"
         />
 
         <BillingClientInfoCard
           v-model:selected-client-id="selectedReceiverId"
+          v-model:selected-business-info-id="selectedReceiverBusinessInfoId"
           title="Receiver Information"
           :items="clientList"
           :is-loading="clientsStore.isLoading"
           :client-data="state.receiver"
+          :business-info-items="receiverBusinessInfoItems"
+          :is-loading-business-info="isLoadingReceiverBusinessInfo"
         />
+
         <BillingInvoiceTaxInfoCard
           v-model:tax-info="state.taxInfo"
           v-model:vat-details="state.vatDetails"

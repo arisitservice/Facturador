@@ -135,4 +135,8 @@ async function onSubmit(event: FormSubmitEvent<NewClient>) {
       />
     </div>
   </UForm>
+
+  <USeparator class="my-4" />
+
+  <CatalogsClientBusinessInfoList :client-id="props.client.id" />
 </template>

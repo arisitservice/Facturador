@@ -11,13 +11,8 @@ export function useNewPaymentComplement() {
   );
 
   const state = reactive<NewPaymentComplementData>({
-    client: {
-      clientId: 0,
-      businessName: '',
-      postalCode: '',
-      taxId: '',
-      taxRegimeId: 0,
-    },
+    issuer: { clientId: 0, businessName: '', postalCode: '', taxId: '', taxRegimeId: 0 },
+    client: { clientId: 0, businessName: '', postalCode: '', taxId: '', taxRegimeId: 0 },
     paymentReception: {
       paymentMethod: '0',
       paymentCurrency: 0,
@@ -31,16 +26,20 @@ export function useNewPaymentComplement() {
   const selectedClientId = shallowRef<number | undefined>(undefined);
   const folioInput = shallowRef('');
 
-  watch(selectedClientId, (id) => {
-    const client = clientsStore.clients.find(c => c.id === id);
-    if (!client)
-      return;
-    state.client.clientId = client.id;
-    state.client.taxId = client.taxId;
-    state.client.businessName = client.businessName;
-    state.client.postalCode = client.postalCode;
-    state.client.taxRegimeId = client.taxRegimeId;
-  });
+  const {
+    issuerMode,
+    selectedOwnId,
+    selectedIssuerClientId,
+    selectedIssuerClientBusinessInfoId,
+    issuerClientBusinessInfoItems,
+    isLoadingIssuerClientBusinessInfo,
+  } = useIssuerSelect(state.issuer);
+
+  const {
+    businessInfoItems: clientBusinessInfoItems,
+    selectedBusinessInfoId: selectedClientBusinessInfoId,
+    isLoadingBusinessInfo: isLoadingClientBusinessInfo,
+  } = useClientBusinessInfoSelect(selectedClientId, state.client);
 
   function addFolio() {
     const trimmed = folioInput.value.trim();
@@ -58,5 +57,22 @@ export function useNewPaymentComplement() {
     // TODO: validate and call API
   }
 
-  return { state, selectedClientId, clientList, folioInput, addFolio, removeFolio, submitPaymentComplement };
+  return {
+    state,
+    issuerMode,
+    selectedOwnId,
+    selectedIssuerClientId,
+    selectedIssuerClientBusinessInfoId,
+    issuerClientBusinessInfoItems,
+    isLoadingIssuerClientBusinessInfo,
+    selectedClientId,
+    selectedClientBusinessInfoId,
+    clientList,
+    clientBusinessInfoItems,
+    isLoadingClientBusinessInfo,
+    folioInput,
+    addFolio,
+    removeFolio,
+    submitPaymentComplement,
+  };
 }

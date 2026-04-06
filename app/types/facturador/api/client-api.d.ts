@@ -21,6 +21,7 @@ export type BusinessInfo = {
   taxRegimeId: number;
   taxAddress: string;
   postalCode: string;
+  isPrimary: boolean;
 };
 
 export type CreateBusinessInfoPayload = Omit<BusinessInfo, 'id'>;

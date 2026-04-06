@@ -32,8 +32,9 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
   label: user.value.name,
   avatar: user.value.avatar,
 }], [{
-  label: 'Profile',
+  label: 'Account',
   icon: 'i-lucide-user',
+  to: { name: 'nova-account' },
 }, {
   label: 'Billing',
   icon: 'i-lucide-credit-card',

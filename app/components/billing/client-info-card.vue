@@ -10,9 +10,12 @@ const props = defineProps<{
   items: SelectItem[];
   isLoading: boolean;
   clientData: ClientData;
+  businessInfoItems?: SelectItem[];
+  isLoadingBusinessInfo?: boolean;
 }>();
 
 const selectedClientId = defineModel<number | undefined>('selectedClientId');
+const selectedBusinessInfoId = defineModel<number | undefined>('selectedBusinessInfoId');
 </script>
 
 <template>
@@ -44,6 +47,27 @@ const selectedClientId = defineModel<number | undefined>('selectedClientId');
           placeholder="Select a client..."
         />
       </UFormField>
+
+      <template v-if="props.businessInfoItems !== undefined">
+        <UFormField
+          label="Business Info"
+          name="businessInfoId"
+          required
+        >
+          <SkeletonFormCard
+            v-if="props.isLoadingBusinessInfo"
+            :field-count="1"
+          />
+          <USelect
+            v-else
+            v-model="selectedBusinessInfoId"
+            :items="props.businessInfoItems"
+            :disabled="!selectedClientId"
+            placeholder="Select business info..."
+          />
+        </UFormField>
+      </template>
+
       <UFormField
         label="Tax Regime"
         name="taxRegimeId"

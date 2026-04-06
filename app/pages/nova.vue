@@ -32,6 +32,8 @@ const title = computed(() => {
       return 'New Credit Note';
     case 'nova-billing-payment-complements-new-payment-complement':
       return 'New Payment Complement';
+    case 'nova-account':
+      return 'Account';
     default:
       return '';
   }

@@ -131,6 +131,11 @@ const links = [[
   },
 ], [
   {
+    label: 'Account',
+    icon: 'i-lucide-user-circle',
+    to: { name: 'nova-account' },
+  },
+  {
     label: 'Feedback',
     icon: 'i-lucide-message-circle',
     to: 'https://github.com/nuxt-ui-templates/dashboard',

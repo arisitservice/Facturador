@@ -6,12 +6,35 @@ definePageMeta({
 });
 
 const clientsStore = useClientsStore();
+const businessInfoStore = useBusinessInfoStore();
 
-await useAsyncData('payment-complement-clients', () => clientsStore.fetchClients(), {
-  immediate: !clientsStore.clients.length,
-});
+await Promise.all([
+  useAsyncData('payment-complement-clients', () => clientsStore.fetchClients(), {
+    immediate: !clientsStore.clients.length,
+  }),
+  useAsyncData('payment-complement-business-info', () => businessInfoStore.fetchBusinessInfoList(), {
+    immediate: !businessInfoStore.businessInfoList.length,
+  }),
+]);
 
-const { state, selectedClientId, clientList, folioInput, addFolio, removeFolio, submitPaymentComplement } = useNewPaymentComplement();
+const {
+  state,
+  issuerMode,
+  selectedOwnId,
+  selectedIssuerClientId,
+  selectedIssuerClientBusinessInfoId,
+  issuerClientBusinessInfoItems,
+  isLoadingIssuerClientBusinessInfo,
+  selectedClientId,
+  selectedClientBusinessInfoId,
+  clientList,
+  clientBusinessInfoItems,
+  isLoadingClientBusinessInfo,
+  folioInput,
+  addFolio,
+  removeFolio,
+  submitPaymentComplement,
+} = useNewPaymentComplement();
 </script>
 
 <template>
@@ -21,12 +44,28 @@ const { state, selectedClientId, clientList, folioInput, addFolio, removeFolio, 
     class="flex flex-col gap-8"
   >
     <div class="flex flex-col sm:flex-row gap-4">
+      <BillingIssuerInfoCard
+        v-model:issuer-mode="issuerMode"
+        v-model:selected-own-id="selectedOwnId"
+        v-model:selected-issuer-client-id="selectedIssuerClientId"
+        v-model:selected-issuer-client-business-info-id="selectedIssuerClientBusinessInfoId"
+        :client-list="clientList"
+        :is-loading-clients="clientsStore.isLoading"
+        :issuer-data="state.issuer"
+        :issuer-client-business-info-items="issuerClientBusinessInfoItems"
+        :is-loading-issuer-client-business-info="isLoadingIssuerClientBusinessInfo"
+      />
+
       <BillingClientInfoCard
         v-model:selected-client-id="selectedClientId"
+        v-model:selected-business-info-id="selectedClientBusinessInfoId"
         :items="clientList"
         :is-loading="clientsStore.isLoading"
         :client-data="state.client"
+        :business-info-items="clientBusinessInfoItems"
+        :is-loading-business-info="isLoadingClientBusinessInfo"
       />
+
       <BillingPaymentComplementPaymentReceptionCard
         v-model="state.paymentReception"
         :folio-input="folioInput"

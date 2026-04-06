@@ -11,65 +11,47 @@ export function useNewInvoice() {
   );
 
   const state = reactive<NewInvoiceData>({
-    issuer: {
-      clientId: 0,
-      businessName: '',
-      postalCode: '',
-      taxId: '',
-      taxRegimeId: 0,
-    },
-    receiver: {
-      clientId: 0,
-      businessName: '',
-      postalCode: '',
-      taxId: '',
-      taxRegimeId: 0,
-    },
-    taxInfo: {
-      invoiceUsageId: 0,
-      paymentCurrencyId: 0,
-      paymentMethod: '',
-      paymentForm: '',
-      relatedInvoiceId: undefined,
-    },
+    issuer: { clientId: 0, businessName: '', postalCode: '', taxId: '', taxRegimeId: 0 },
+    receiver: { clientId: 0, businessName: '', postalCode: '', taxId: '', taxRegimeId: 0 },
+    taxInfo: { invoiceUsageId: 0, paymentCurrencyId: 0, paymentMethod: '', paymentForm: '', relatedInvoiceId: undefined },
     productServices: [],
-    vatDetails: {
-      vatChargedAtRate: false,
-      vatExempt: false,
-      vatWithholdingAtRate: false,
-      incomeTaxWithholding: false,
-      amount: 0,
-    },
+    vatDetails: { vatChargedAtRate: false, vatExempt: false, vatWithholdingAtRate: false, incomeTaxWithholding: false, amount: 0 },
   });
 
   const selectedReceiverId = shallowRef<number | undefined>(undefined);
-  const selectedIssuerId = shallowRef<number | undefined>(undefined);
 
-  watch(selectedReceiverId, (id) => {
-    const client = clientsStore.clients.find(c => c.id === id);
-    if (!client)
-      return;
-    state.receiver.clientId = client.id;
-    state.receiver.taxId = client.taxId;
-    state.receiver.businessName = client.businessName;
-    state.receiver.postalCode = client.postalCode;
-    state.receiver.taxRegimeId = client.taxRegimeId;
-  });
+  const {
+    issuerMode,
+    selectedOwnId,
+    selectedIssuerClientId,
+    selectedIssuerClientBusinessInfoId,
+    issuerClientBusinessInfoItems,
+    isLoadingIssuerClientBusinessInfo,
+  } = useIssuerSelect(state.issuer);
 
-  watch(selectedIssuerId, (id) => {
-    const client = clientsStore.clients.find(c => c.id === id);
-    if (!client)
-      return;
-    state.issuer.clientId = client.id;
-    state.issuer.taxId = client.taxId;
-    state.issuer.businessName = client.businessName;
-    state.issuer.postalCode = client.postalCode;
-    state.issuer.taxRegimeId = client.taxRegimeId;
-  });
+  const {
+    businessInfoItems: receiverBusinessInfoItems,
+    selectedBusinessInfoId: selectedReceiverBusinessInfoId,
+    isLoadingBusinessInfo: isLoadingReceiverBusinessInfo,
+  } = useClientBusinessInfoSelect(selectedReceiverId, state.receiver);
 
   function submitInvoice() {
     // TODO: validate and call API
   }
 
-  return { state, selectedReceiverId, selectedIssuerId, clientList, submitInvoice };
+  return {
+    state,
+    issuerMode,
+    selectedOwnId,
+    selectedIssuerClientId,
+    selectedIssuerClientBusinessInfoId,
+    issuerClientBusinessInfoItems,
+    isLoadingIssuerClientBusinessInfo,
+    selectedReceiverId,
+    selectedReceiverBusinessInfoId,
+    clientList,
+    receiverBusinessInfoItems,
+    isLoadingReceiverBusinessInfo,
+    submitInvoice,
+  };
 }

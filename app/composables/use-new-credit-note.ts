@@ -11,38 +11,46 @@ export function useNewCreditNote() {
   );
 
   const state = reactive<NewCreditNoteData>({
-    client: {
-      clientId: 0,
-      businessName: '',
-      postalCode: '',
-      taxId: '',
-      taxRegimeId: 0,
-    },
-    taxInfo: {
-      invoiceUsageId: 0,
-      paymentCurrencyId: 0,
-      paymentMethod: '',
-      paymentForm: '',
-    },
+    issuer: { clientId: 0, businessName: '', postalCode: '', taxId: '', taxRegimeId: 0 },
+    client: { clientId: 0, businessName: '', postalCode: '', taxId: '', taxRegimeId: 0 },
+    taxInfo: { invoiceUsageId: 0, paymentCurrencyId: 0, paymentMethod: '', paymentForm: '' },
     productServices: [],
   });
 
   const selectedClientId = shallowRef<number | undefined>(undefined);
 
-  watch(selectedClientId, (id) => {
-    const client = clientsStore.clients.find(c => c.id === id);
-    if (!client)
-      return;
-    state.client.clientId = client.id;
-    state.client.taxId = client.taxId;
-    state.client.businessName = client.businessName;
-    state.client.postalCode = client.postalCode;
-    state.client.taxRegimeId = client.taxRegimeId;
-  });
+  const {
+    issuerMode,
+    selectedOwnId,
+    selectedIssuerClientId,
+    selectedIssuerClientBusinessInfoId,
+    issuerClientBusinessInfoItems,
+    isLoadingIssuerClientBusinessInfo,
+  } = useIssuerSelect(state.issuer);
+
+  const {
+    businessInfoItems: clientBusinessInfoItems,
+    selectedBusinessInfoId: selectedClientBusinessInfoId,
+    isLoadingBusinessInfo: isLoadingClientBusinessInfo,
+  } = useClientBusinessInfoSelect(selectedClientId, state.client);
 
   function submitCreditNote() {
     // TODO: validate and call API
   }
 
-  return { state, selectedClientId, clientList, submitCreditNote };
+  return {
+    state,
+    issuerMode,
+    selectedOwnId,
+    selectedIssuerClientId,
+    selectedIssuerClientBusinessInfoId,
+    issuerClientBusinessInfoItems,
+    isLoadingIssuerClientBusinessInfo,
+    selectedClientId,
+    selectedClientBusinessInfoId,
+    clientList,
+    clientBusinessInfoItems,
+    isLoadingClientBusinessInfo,
+    submitCreditNote,
+  };
 }
