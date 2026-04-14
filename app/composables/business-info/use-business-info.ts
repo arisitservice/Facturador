@@ -14,13 +14,13 @@ export function useBusinessInfo() {
   }
 
   async function getAll() {
-    return useApiFetch<ApiResponse<BusinessInfo[]>>('/Tenant/v1/BusinessInfo/GetAll', {
+    return useApiFetch<ApiResponse<BusinessInfo[]>>('/Tenant/v1/AccountTaxInfos/GetAll', {
       headers: tenantHeaders(),
     });
   }
 
   async function create(body: CreateBusinessInfoPayload) {
-    return useApiFetch<ApiResponse<BusinessInfo>>('/Tenant/v1/BusinessInfo/Create', {
+    return useApiFetch<ApiResponse<BusinessInfo>>('/Tenant/v1/AccountTaxInfos/Create', {
       method: 'POST',
       headers: tenantHeaders(),
       body,
@@ -28,7 +28,7 @@ export function useBusinessInfo() {
   }
 
   async function update(id: number, body: UpdateBusinessInfoPayload) {
-    return useApiFetch<ApiResponse<BusinessInfo>>(`/Tenant/v1/BusinessInfo/Update/${id}`, {
+    return useApiFetch<ApiResponse<BusinessInfo>>(`/Tenant/v1/AccountTaxInfos/Update/${id}`, {
       method: 'PUT',
       headers: tenantHeaders(),
       body,
@@ -36,7 +36,7 @@ export function useBusinessInfo() {
   }
 
   async function remove(id: number): Promise<ApiResponse<null>> {
-    await useApiFetch<void>(`/Tenant/v1/BusinessInfo/Delete/${id}`, {
+    await useApiFetch<void>(`/Tenant/v1/AccountTaxInfos/Delete/${id}`, {
       method: 'DELETE',
       headers: tenantHeaders(),
     });
@@ -44,7 +44,7 @@ export function useBusinessInfo() {
   }
 
   async function setPrimary(id: number) {
-    return useApiFetch<ApiResponse<BusinessInfo>>(`/Tenant/v1/BusinessInfo/SetPrimary/${id}`, {
+    return useApiFetch<ApiResponse<BusinessInfo>>(`/Tenant/v1/AccountTaxInfos/SetPrimary/${id}`, {
       method: 'PATCH',
       headers: tenantHeaders(),
     });
