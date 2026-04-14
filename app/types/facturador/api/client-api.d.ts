@@ -26,7 +26,7 @@ export type BusinessInfo = {
   id: number;
   businessName: string;
   taxId: string;
-  taxRegime: TaxRegimen[];
+  taxRegime: TaxRegimen;
   taxAddress: string;
   postalCode: string;
   default: boolean;
