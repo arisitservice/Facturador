@@ -7,6 +7,7 @@ definePageMeta({
 
 const clientsStore = useClientsStore();
 const businessInfoStore = useBusinessInfoStore();
+const taxRegimeStore = useTaxRegimeStore();
 
 await Promise.all([
   useAsyncData('invoice-clients', () => clientsStore.fetchClients(), {
@@ -15,6 +16,7 @@ await Promise.all([
   useAsyncData('invoice-business-info', () => businessInfoStore.fetchBusinessInfoList(), {
     immediate: !businessInfoStore.businessInfoList.length,
   }),
+  taxRegimeStore.getTaxRegimes(),
 ]);
 
 const {
@@ -25,11 +27,13 @@ const {
   selectedIssuerClientBusinessInfoId,
   issuerClientBusinessInfoItems,
   isLoadingIssuerClientBusinessInfo,
+  issuerTaxRegime,
   selectedReceiverId,
   selectedReceiverBusinessInfoId,
   clientList,
   receiverBusinessInfoItems,
   isLoadingReceiverBusinessInfo,
+  receiverTaxRegime,
   submitInvoice,
 } = useNewInvoice();
 </script>
@@ -51,6 +55,7 @@ const {
           :issuer-data="state.issuer"
           :issuer-client-business-info-items="issuerClientBusinessInfoItems"
           :is-loading-issuer-client-business-info="isLoadingIssuerClientBusinessInfo"
+          :issuer-tax-regime="issuerTaxRegime"
         />
 
         <BillingClientInfoCard
@@ -62,6 +67,7 @@ const {
           :client-data="state.receiver"
           :business-info-items="receiverBusinessInfoItems"
           :is-loading-business-info="isLoadingReceiverBusinessInfo"
+          :tax-regime="receiverTaxRegime"
         />
 
         <BillingInvoiceTaxInfoCard

@@ -7,6 +7,7 @@ definePageMeta({
 
 const clientsStore = useClientsStore();
 const businessInfoStore = useBusinessInfoStore();
+const taxRegimeStore = useTaxRegimeStore();
 
 await Promise.all([
   useAsyncData('payment-complement-clients', () => clientsStore.fetchClients(), {
@@ -15,6 +16,7 @@ await Promise.all([
   useAsyncData('payment-complement-business-info', () => businessInfoStore.fetchBusinessInfoList(), {
     immediate: !businessInfoStore.businessInfoList.length,
   }),
+  taxRegimeStore.getTaxRegimes(),
 ]);
 
 const {
@@ -25,11 +27,13 @@ const {
   selectedIssuerClientBusinessInfoId,
   issuerClientBusinessInfoItems,
   isLoadingIssuerClientBusinessInfo,
+  issuerTaxRegime,
   selectedClientId,
   selectedClientBusinessInfoId,
   clientList,
   clientBusinessInfoItems,
   isLoadingClientBusinessInfo,
+  clientTaxRegime,
   folioInput,
   addFolio,
   removeFolio,
@@ -54,6 +58,7 @@ const {
         :issuer-data="state.issuer"
         :issuer-client-business-info-items="issuerClientBusinessInfoItems"
         :is-loading-issuer-client-business-info="isLoadingIssuerClientBusinessInfo"
+        :issuer-tax-regime="issuerTaxRegime"
       />
 
       <BillingClientInfoCard
@@ -64,6 +69,7 @@ const {
         :client-data="state.client"
         :business-info-items="clientBusinessInfoItems"
         :is-loading-business-info="isLoadingClientBusinessInfo"
+        :tax-regime="clientTaxRegime"
       />
 
       <BillingPaymentComplementPaymentReceptionCard
