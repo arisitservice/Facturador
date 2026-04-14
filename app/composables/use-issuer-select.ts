@@ -40,7 +40,7 @@ export function useIssuerSelect(issuerData: ClientData) {
     const info = businessInfoStore.businessInfoList.find(b => b.id === id);
     if (!info)
       return;
-    ownTaxRegime.value = info.taxRegime?.[0] ?? null;
+    ownTaxRegime.value = info.taxRegime ?? null;
     issuerData.clientId = info.id;
     issuerData.taxId = info.taxId;
     issuerData.businessName = info.businessName;

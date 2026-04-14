@@ -21,7 +21,7 @@ const state = ref<NewClient>({
   name: props.client.name,
   businessName: firstTaxInfo?.businessName ?? '',
   taxId: firstTaxInfo?.taxId ?? '',
-  taxRegimeId: firstTaxInfo?.taxRegime?.[0]?.id ?? 0,
+  taxRegimeId: firstTaxInfo?.taxRegime?.id ?? 0,
   taxAddress: firstTaxInfo?.taxAddress ?? '',
   postalCode: firstTaxInfo?.postalCode ?? '',
 });

@@ -71,7 +71,7 @@ export function useClientBusinessInfoSelect(
     const info = businessInfoList.value.find(b => b.id === id);
     if (!info)
       return;
-    const regime = info.taxRegime?.[0] ?? null;
+    const regime = info.taxRegime ?? null;
     selectedTaxRegime.value = regime;
     clientData.taxId = info.taxId;
     clientData.businessName = info.businessName;
