@@ -5,7 +5,7 @@ export function useNewPaymentComplement() {
 
   const clientList = computed(() =>
     clientsStore.clients.map(client => ({
-      label: `${client.name} — ${client.taxId}`,
+      label: `${client.name} — ${client.clientTaxInfos[0]?.taxId ?? ''}`,
       value: client.id,
     })),
   );
@@ -33,12 +33,14 @@ export function useNewPaymentComplement() {
     selectedIssuerClientBusinessInfoId,
     issuerClientBusinessInfoItems,
     isLoadingIssuerClientBusinessInfo,
+    issuerTaxRegime,
   } = useIssuerSelect(state.issuer);
 
   const {
     businessInfoItems: clientBusinessInfoItems,
     selectedBusinessInfoId: selectedClientBusinessInfoId,
     isLoadingBusinessInfo: isLoadingClientBusinessInfo,
+    selectedTaxRegime: clientTaxRegime,
   } = useClientBusinessInfoSelect(selectedClientId, state.client);
 
   function addFolio() {
@@ -65,11 +67,13 @@ export function useNewPaymentComplement() {
     selectedIssuerClientBusinessInfoId,
     issuerClientBusinessInfoItems,
     isLoadingIssuerClientBusinessInfo,
+    issuerTaxRegime,
     selectedClientId,
     selectedClientBusinessInfoId,
     clientList,
     clientBusinessInfoItems,
     isLoadingClientBusinessInfo,
+    clientTaxRegime,
     folioInput,
     addFolio,
     removeFolio,

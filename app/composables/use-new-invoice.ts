@@ -5,7 +5,7 @@ export function useNewInvoice() {
 
   const clientList = computed(() =>
     clientsStore.clients.map(client => ({
-      label: `${client.name} — ${client.taxId}`,
+      label: `${client.name} — ${client.clientTaxInfos[0]?.taxId ?? ''}`,
       value: client.id,
     })),
   );
@@ -27,12 +27,14 @@ export function useNewInvoice() {
     selectedIssuerClientBusinessInfoId,
     issuerClientBusinessInfoItems,
     isLoadingIssuerClientBusinessInfo,
+    issuerTaxRegime,
   } = useIssuerSelect(state.issuer);
 
   const {
     businessInfoItems: receiverBusinessInfoItems,
     selectedBusinessInfoId: selectedReceiverBusinessInfoId,
     isLoadingBusinessInfo: isLoadingReceiverBusinessInfo,
+    selectedTaxRegime: receiverTaxRegime,
   } = useClientBusinessInfoSelect(selectedReceiverId, state.receiver);
 
   function submitInvoice() {
@@ -47,11 +49,13 @@ export function useNewInvoice() {
     selectedIssuerClientBusinessInfoId,
     issuerClientBusinessInfoItems,
     isLoadingIssuerClientBusinessInfo,
+    issuerTaxRegime,
     selectedReceiverId,
     selectedReceiverBusinessInfoId,
     clientList,
     receiverBusinessInfoItems,
     isLoadingReceiverBusinessInfo,
+    receiverTaxRegime,
     submitInvoice,
   };
 }

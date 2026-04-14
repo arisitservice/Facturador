@@ -5,7 +5,7 @@ export function useNewCreditNote() {
 
   const clientList = computed(() =>
     clientsStore.clients.map(client => ({
-      label: `${client.name} — ${client.taxId}`,
+      label: `${client.name} — ${client.clientTaxInfos[0]?.taxId ?? ''}`,
       value: client.id,
     })),
   );
@@ -26,12 +26,14 @@ export function useNewCreditNote() {
     selectedIssuerClientBusinessInfoId,
     issuerClientBusinessInfoItems,
     isLoadingIssuerClientBusinessInfo,
+    issuerTaxRegime,
   } = useIssuerSelect(state.issuer);
 
   const {
     businessInfoItems: clientBusinessInfoItems,
     selectedBusinessInfoId: selectedClientBusinessInfoId,
     isLoadingBusinessInfo: isLoadingClientBusinessInfo,
+    selectedTaxRegime: clientTaxRegime,
   } = useClientBusinessInfoSelect(selectedClientId, state.client);
 
   function submitCreditNote() {
@@ -46,11 +48,13 @@ export function useNewCreditNote() {
     selectedIssuerClientBusinessInfoId,
     issuerClientBusinessInfoItems,
     isLoadingIssuerClientBusinessInfo,
+    issuerTaxRegime,
     selectedClientId,
     selectedClientBusinessInfoId,
     clientList,
     clientBusinessInfoItems,
     isLoadingClientBusinessInfo,
+    clientTaxRegime,
     submitCreditNote,
   };
 }
