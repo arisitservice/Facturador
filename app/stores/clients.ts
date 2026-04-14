@@ -106,6 +106,27 @@ export const useClientsStore = defineStore('useClientsStore', () => {
     }
   }
 
+  function addClientTaxInfo(clientId: number, info: import('~/types/facturador/api/client-api').BusinessInfo) {
+    const client = clients.value.find(c => c.id === clientId);
+    if (client)
+      client.clientTaxInfos.push(info);
+  }
+
+  function updateClientTaxInfo(clientId: number, info: import('~/types/facturador/api/client-api').BusinessInfo) {
+    const client = clients.value.find(c => c.id === clientId);
+    if (!client)
+      return;
+    const index = client.clientTaxInfos.findIndex(t => t.id === info.id);
+    if (index !== -1)
+      client.clientTaxInfos[index] = info;
+  }
+
+  function removeClientTaxInfo(clientId: number, taxInfoId: number) {
+    const client = clients.value.find(c => c.id === clientId);
+    if (client)
+      client.clientTaxInfos = client.clientTaxInfos.filter(t => t.id !== taxInfoId);
+  }
+
   return {
     clients,
     selectedClient,
@@ -116,6 +137,9 @@ export const useClientsStore = defineStore('useClientsStore', () => {
     createClient,
     updateClient,
     deleteClient,
+    addClientTaxInfo,
+    updateClientTaxInfo,
+    removeClientTaxInfo,
   };
 });
 
