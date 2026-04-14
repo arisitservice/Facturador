@@ -3,13 +3,15 @@ import type { SelectItem } from '@nuxt/ui';
 
 import type { IssuerMode } from '~/composables/use-issuer-select';
 import type { ClientData } from '~/lib/schemas/billing';
+import type { TaxRegimen } from '~/types/facturador/api/client-api';
 
-defineProps<{
+const props = defineProps<{
   clientList: SelectItem[];
   isLoadingClients: boolean;
   issuerData: ClientData;
   issuerClientBusinessInfoItems: SelectItem[];
   isLoadingIssuerClientBusinessInfo: boolean;
+  issuerTaxRegime?: TaxRegimen | null;
 }>();
 
 const issuerMode = defineModel<IssuerMode>('issuerMode', { required: true });
@@ -20,10 +22,25 @@ const selectedIssuerClientBusinessInfoId = defineModel<number | undefined>('sele
 const businessInfoStore = useBusinessInfoStore();
 const { businessInfoList, selectItems: ownItems, isLoading: isLoadingOwn } = storeToRefs(businessInfoStore);
 
+const taxRegimeStore = useTaxRegimeStore();
+
 const modeOptions = [
   { label: 'My Business', value: 'own' as IssuerMode },
   { label: 'Client', value: 'client' as IssuerMode },
 ];
+
+const taxRegimeLabel = computed(() => {
+  // Prefer embedded regime object (has satCode + description)
+  if (props.issuerTaxRegime)
+    return `${props.issuerTaxRegime.satCode} — ${props.issuerTaxRegime.description}`;
+  // Fallback: look up by id in the loaded tax regimes list
+  if (props.issuerData.taxRegimeId) {
+    const regime = taxRegimeStore.taxRegimes.find(r => r.id === props.issuerData.taxRegimeId);
+    if (regime)
+      return `${regime.satCode} — ${regime.description}`;
+  }
+  return '';
+});
 </script>
 
 <template>
@@ -33,17 +50,17 @@ const modeOptions = [
         <h2 class="text-xl lg:text-2xl font-bold">
           Issuer Information
         </h2>
-        <UButtonGroup class="w-full">
+        <div class="flex w-full">
           <UButton
             v-for="opt in modeOptions"
             :key="opt.value"
             :label="opt.label"
             :color="issuerMode === opt.value ? 'primary' : 'neutral'"
             :variant="issuerMode === opt.value ? 'solid' : 'outline'"
-            class="flex-1"
+            class="flex-1 rounded-none first:rounded-s-md last:rounded-e-md"
             @click="issuerMode = opt.value"
           />
-        </UButtonGroup>
+        </div>
       </div>
     </template>
 
@@ -64,7 +81,6 @@ const modeOptions = [
           color="warning"
           variant="subtle"
           title="No business information found"
-          description="Go to your Account page to add a business profile before creating documents."
         >
           <template #description>
             <p class="text-sm mt-1">
@@ -145,7 +161,7 @@ const modeOptions = [
           name="issuerTaxRegimeId"
         >
           <UInput
-            :model-value="issuerData.taxRegimeId || ''"
+            :model-value="taxRegimeLabel"
             disabled
             class="w-full"
           />

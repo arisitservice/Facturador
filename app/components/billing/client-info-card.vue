@@ -2,6 +2,7 @@
 import type { SelectItem } from '@nuxt/ui';
 
 import type { ClientData } from '~/lib/schemas/billing';
+import type { TaxRegimen } from '~/types/facturador/api/client-api';
 
 import { clientDataSchema } from '~/lib/schemas/billing';
 
@@ -12,10 +13,26 @@ const props = defineProps<{
   clientData: ClientData;
   businessInfoItems?: SelectItem[];
   isLoadingBusinessInfo?: boolean;
+  taxRegime?: TaxRegimen | null;
 }>();
 
 const selectedClientId = defineModel<number | undefined>('selectedClientId');
 const selectedBusinessInfoId = defineModel<number | undefined>('selectedBusinessInfoId');
+
+const taxRegimeStore = useTaxRegimeStore();
+
+const taxRegimeLabel = computed(() => {
+  // Prefer embedded regime object (has satCode + description)
+  if (props.taxRegime)
+    return `${props.taxRegime.satCode} — ${props.taxRegime.description}`;
+  // Fallback: look up by id in the loaded tax regimes list
+  if (props.clientData.taxRegimeId) {
+    const regime = taxRegimeStore.taxRegimes.find(r => r.id === props.clientData.taxRegimeId);
+    if (regime)
+      return `${regime.satCode} — ${regime.description}`;
+  }
+  return '';
+});
 </script>
 
 <template>
@@ -45,6 +62,7 @@ const selectedBusinessInfoId = defineModel<number | undefined>('selectedBusiness
           v-model="selectedClientId"
           :items="props.items"
           placeholder="Select a client..."
+          class="w-full"
         />
       </UFormField>
 
@@ -64,6 +82,7 @@ const selectedBusinessInfoId = defineModel<number | undefined>('selectedBusiness
             :items="props.businessInfoItems"
             :disabled="!selectedClientId"
             placeholder="Select business info..."
+            class="w-full"
           />
         </UFormField>
       </template>
@@ -74,7 +93,7 @@ const selectedBusinessInfoId = defineModel<number | undefined>('selectedBusiness
         required
       >
         <UInput
-          :model-value="props.clientData.taxRegimeId"
+          :model-value="taxRegimeLabel"
           disabled
           class="w-full"
         />
