@@ -64,7 +64,7 @@ async function confirmDelete() {
   if (!deleteTarget.value)
     return;
   isDeleting.value = true;
-  const response = await remove(props.clientId, deleteTarget.value.id);
+  const response = await remove(deleteTarget.value.id);
   isDeleting.value = false;
   if (response.isSuccess) {
     businessInfoList.value = businessInfoList.value.filter(b => b.id !== deleteTarget.value!.id);

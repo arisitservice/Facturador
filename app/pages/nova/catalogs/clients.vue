@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
-import type { Row } from '@tanstack/table-core';
 
 import { getPaginationRowModel } from '@tanstack/table-core';
 import { upperFirst } from 'scule';
 
-import type { Client } from '~/types/facturador/api/client-api';
+import type { BusinessInfo, Client } from '~/types/facturador/api/client-api';
 
 definePageMeta({
   name: 'nova-catalogs-clients',
@@ -13,7 +12,6 @@ definePageMeta({
 
 const UButton = resolveComponent('UButton');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
-const UCheckbox = resolveComponent('UCheckbox');
 
 const toast = useToast();
 const table = useTemplateRef('table');
@@ -27,7 +25,6 @@ const columnFilters = ref([{
   value: '',
 }]);
 const columnVisibility = ref();
-const rowSelection = ref({});
 
 if (!clientsStore.clients.length) {
   await clientsStore.fetchClients();
@@ -38,7 +35,7 @@ function openEdit(client: Client) {
   isEditSlideoverOpen.value = true;
 }
 
-function getRowItems(row: Row<Client>) {
+function getRowItems(item: Client | BusinessInfo) {
   return [
     {
       type: 'label',
@@ -48,14 +45,14 @@ function getRowItems(row: Row<Client>) {
       label: 'Editar cliente',
       icon: 'i-lucide-pencil',
       onSelect() {
-        openEdit(row.original);
+        openEdit(item as Client);
       },
     },
     {
       label: 'Copiar ID',
       icon: 'i-lucide-copy',
       onSelect() {
-        navigator.clipboard.writeText(row.original.id.toString());
+        navigator.clipboard.writeText(item.id.toString());
         toast.add({
           title: 'Copiado',
           description: 'ID del cliente copiado al portapapeles',
@@ -70,7 +67,7 @@ function getRowItems(row: Row<Client>) {
       icon: 'i-lucide-trash',
       color: 'error',
       async onSelect() {
-        const response = await clientsStore.deleteClient(row.original.id);
+        const response = await clientsStore.deleteClient(item.id);
         toast.add({
           title: response.isSuccess ? 'Cliente eliminado' : 'Error',
           description: response.message ?? undefined,
@@ -83,32 +80,56 @@ function getRowItems(row: Row<Client>) {
 
 const columns: TableColumn<Client>[] = [
   {
-    id: 'select',
-    header: ({ table }) =>
-      h(UCheckbox, {
-        'modelValue': table.getIsSomePageRowsSelected()
-          ? 'indeterminate'
-          : table.getIsAllPageRowsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-          table.toggleAllPageRowsSelected(!!value),
-        'ariaLabel': 'Select all',
-      }),
+    id: 'expand',
     cell: ({ row }) =>
-      h(UCheckbox, {
-        'modelValue': row.getIsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-        'ariaLabel': 'Select row',
+      h(UButton, {
+        'color': 'neutral',
+        'variant': 'ghost',
+        'icon': 'i-lucide-chevron-down',
+        'square': true,
+        'aria-label': 'Expand',
+        'ui': {
+          leadingIcon: [
+            'transition-transform',
+            row.getIsExpanded() ? 'duration-200 rotate-180' : '',
+          ],
+        },
+        'onClick': () => row.toggleExpanded(),
       }),
-  },
-  {
-    accessorKey: 'id',
-    header: 'ID',
   },
   {
     accessorKey: 'name',
     header: 'Nombre',
     cell: ({ row }) => h('p', { class: 'font-medium text-highlighted' }, row.original.name),
   },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return h(
+        'div',
+        { class: 'text-right' },
+        h(
+          UDropdownMenu,
+          {
+            content: {
+              align: 'end',
+            },
+            items: getRowItems(row.original),
+          },
+          () =>
+            h(UButton, {
+              icon: 'i-lucide-ellipsis-vertical',
+              color: 'neutral',
+              variant: 'ghost',
+              class: 'ml-auto',
+            }),
+        ),
+      );
+    },
+  },
+];
+
+const childrenColumns: TableColumn<BusinessInfo>[] = [
   {
     accessorKey: 'businessName',
     header: 'Razón Social',
@@ -147,7 +168,7 @@ const columns: TableColumn<Client>[] = [
             content: {
               align: 'end',
             },
-            items: getRowItems(row),
+            items: getRowItems(row.original),
           },
           () =>
             h(UButton, {
@@ -175,6 +196,8 @@ const pagination = ref({
   pageIndex: 0,
   pageSize: 10,
 });
+
+const expanded = ref({});
 </script>
 
 <template>
@@ -233,10 +256,9 @@ const pagination = ref({
     </div>
 
     <UTable
-      ref="table"
+      v-model:expanded="expanded"
       v-model:column-filters="columnFilters"
       v-model:column-visibility="columnVisibility"
-      v-model:row-selection="rowSelection"
       v-model:pagination="pagination"
       :pagination-options="{
         getPaginationRowModel: getPaginationRowModel(),
@@ -253,7 +275,23 @@ const pagination = ref({
         td: 'border-b border-default',
         separator: 'h-0',
       }"
-    />
+    >
+      <template #expanded="{ row }">
+        <UTable
+          :data="row.original.clientTaxInfos"
+          :columns="childrenColumns"
+          class="table-fixed border-separate border-spacing-0 bg-muted/50"
+          :ui="{
+            base: '',
+            thead: '[&>tr]:bg-transparent [&>tr]:after:content-none',
+            tbody: '[&>tr]:last:[&>td]:border-b-0',
+            th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
+            td: 'border-b border-default',
+            separator: 'h-0',
+          }"
+        />
+      </template>
+    </UTable>
 
     <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
       <div class="text-sm text-muted">

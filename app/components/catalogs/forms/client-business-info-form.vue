@@ -34,7 +34,7 @@ const schema = object({
 const state = reactive({
   businessName: props.editTarget?.businessName ?? '',
   taxId: props.editTarget?.taxId ?? '',
-  taxRegimeId: props.editTarget?.taxRegimeId ?? 0,
+  taxRegimeId: props.editTarget?.taxRegime?.[0]?.id ?? 0,
   taxAddress: props.editTarget?.taxAddress ?? '',
   postalCode: props.editTarget?.postalCode ?? '',
 });
@@ -47,8 +47,8 @@ async function onSubmit() {
   isSaving.value = true;
   try {
     const response = props.editTarget
-      ? await update(props.clientId, props.editTarget.id, state)
-      : await create(props.clientId, state);
+      ? await update(props.editTarget.id, state)
+      : await create({ ...state, clientId: props.clientId, default: false });
 
     if (response.isSuccess && response.payload) {
       toast.add({

@@ -15,13 +15,15 @@ const toast = useToast();
 
 await taxRegimeStore.getTaxRegimes();
 
+const firstTaxInfo = props.client.clientTaxInfos[0];
+
 const state = ref<NewClient>({
   name: props.client.name,
-  businessName: props.client.businessName,
-  taxId: props.client.taxId,
-  taxRegimeId: props.client.taxRegimeId,
-  taxAddress: props.client.taxAddress,
-  postalCode: props.client.postalCode,
+  businessName: firstTaxInfo?.businessName ?? '',
+  taxId: firstTaxInfo?.taxId ?? '',
+  taxRegimeId: firstTaxInfo?.taxRegime?.[0]?.id ?? 0,
+  taxAddress: firstTaxInfo?.taxAddress ?? '',
+  postalCode: firstTaxInfo?.postalCode ?? '',
 });
 
 async function onSubmit(event: FormSubmitEvent<NewClient>) {
