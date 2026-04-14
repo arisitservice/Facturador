@@ -15,7 +15,7 @@ export const useBusinessInfoStore = defineStore('businessInfo', () => {
   const isSaving = ref(false);
 
   const defaultBusinessInfo = computed(() =>
-    businessInfoList.value.find(b => b.isPrimary) ?? businessInfoList.value[0] ?? null,
+    businessInfoList.value.find(b => b.default) ?? businessInfoList.value[0] ?? null,
   );
 
   const defaultBusinessInfoId = computed(() => defaultBusinessInfo.value?.id ?? null);
@@ -49,10 +49,10 @@ export const useBusinessInfoStore = defineStore('businessInfo', () => {
     try {
       const response = await setPrimary(id);
       if (response.isSuccess && response.payload) {
-        // Update isPrimary flags locally
+        // Update default flags locally
         businessInfoList.value = businessInfoList.value.map(b => ({
           ...b,
-          isPrimary: b.id === id,
+          default: b.id === id,
         }));
       }
       return response;

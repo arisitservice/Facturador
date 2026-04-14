@@ -114,7 +114,7 @@ async function confirmDelete() {
         v-for="info in businessInfoList"
         :key="info.id"
         class="flex items-start justify-between p-4 rounded-lg border border-default bg-elevated/30"
-        :class="{ 'ring-2 ring-primary': info.isPrimary }"
+        :class="{ 'ring-2 ring-primary': info.default }"
       >
         <div class="flex flex-col gap-1">
           <div class="flex items-center gap-2">
@@ -122,7 +122,7 @@ async function confirmDelete() {
               {{ info.businessName }}
             </p>
             <UBadge
-              v-if="info.isPrimary"
+              v-if="info.default"
               label="Default"
               color="primary"
               variant="subtle"
@@ -139,7 +139,7 @@ async function confirmDelete() {
         </div>
         <div class="flex gap-1 shrink-0">
           <UTooltip
-            v-if="!info.isPrimary"
+            v-if="!info.default"
             text="Set as default"
           >
             <UButton
