@@ -55,7 +55,7 @@ export const useAuthStore = defineStore('useAuthStore', () => {
         method: 'POST',
         headers: {
           // Test only id for aaaa@aaaa.com user
-          'X-Tenant-Id': '885b4b63-3fda-4c27-9f3f-19ae61236453',
+          'X-Tenant-Id': useRuntimeConfig().public.testTenantId, // '33910ce2-a7fb-4479-8f9f-bcb8e98e91cc',
         },
         body: { email, password },
       });

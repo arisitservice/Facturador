@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: 'http://localhost:8080/api',
+      testTenantId: '33910ce2-a7fb-4479-8f9f-bcb8e98e91cc',
     },
   },
   devServer: {

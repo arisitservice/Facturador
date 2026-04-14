@@ -1,7 +1,7 @@
 import type { ApiResponse } from '~/types/facturador/api';
 import type { Client, CreateClientPayload, UpdateClientPayload } from '~/types/facturador/api/client-api';
 
-const TENANT_ID = '885b4b63-3fda-4c27-9f3f-19ae61236453';
+const TENANT_ID = useRuntimeConfig().public.testTenantId; // '33910ce2-a7fb-4479-8f9f-bcb8e98e91cc';
 
 export function useClient() {
   const authStore = useAuthStore();
