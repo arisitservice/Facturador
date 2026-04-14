@@ -6,6 +6,7 @@ export function useNewInvoice() {
   const clientList = computed(() =>
     clientsStore.clients.map(client => ({
       label: `${client.name} — ${client.clientTaxInfos[0]?.taxId ?? ''}`,
+      clientTaxInfos: client.clientTaxInfos,
       value: client.id,
     })),
   );
