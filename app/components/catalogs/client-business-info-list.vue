@@ -8,6 +8,7 @@ const props = defineProps<{
 }>();
 
 const { getAll, remove } = useClientBusinessInfo();
+const clientsStore = useClientsStore();
 const toast = useToast();
 
 const businessInfoList = ref<BusinessInfo[]>([]);
@@ -53,9 +54,11 @@ function onSaved(info: BusinessInfo) {
     const index = businessInfoList.value.findIndex(b => b.id === info.id);
     if (index !== -1)
       businessInfoList.value[index] = info;
+    clientsStore.updateClientTaxInfo(props.clientId, info);
   }
   else {
     businessInfoList.value.push(info);
+    clientsStore.addClientTaxInfo(props.clientId, info);
   }
   slideoverOpen.value = false;
 }
@@ -67,7 +70,9 @@ async function confirmDelete() {
   const response = await remove(deleteTarget.value.id);
   isDeleting.value = false;
   if (response.isSuccess) {
-    businessInfoList.value = businessInfoList.value.filter(b => b.id !== deleteTarget.value!.id);
+    const deletedId = deleteTarget.value!.id;
+    businessInfoList.value = businessInfoList.value.filter(b => b.id !== deletedId);
+    clientsStore.removeClientTaxInfo(props.clientId, deletedId);
     toast.add({ title: 'Business info deleted', color: 'success', icon: 'i-lucide-trash' });
   }
   else {
