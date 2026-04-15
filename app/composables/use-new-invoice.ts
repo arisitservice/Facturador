@@ -1,5 +1,7 @@
 import type { NewInvoiceData } from '~/lib/schemas/billing';
 
+import { useBilling } from './billing/use-billing';
+
 export function useNewInvoice() {
   const clientsStore = useClientsStore();
 
@@ -38,8 +40,11 @@ export function useNewInvoice() {
     selectedTaxRegime: receiverTaxRegime,
   } = useClientBusinessInfoSelect(selectedReceiverId, state.receiver);
 
-  function submitInvoice() {
+  async function submitInvoice() {
     // TODO: validate and call API
+    const response = await useBilling().invoice.singInvoice(state);
+
+    console.log(response);
   }
 
   return {
